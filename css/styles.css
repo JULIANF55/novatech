@@ -1277,8 +1277,11 @@ img {
         padding: 13px 20px;
     }
 
+    /* Navbar más compacta en móvil */
+    .navbar             { padding: 10px 0; }
+
     /* Hero */
-    .hero               { padding: 100px 0 100px; }
+    .hero               { padding: 140px 0 100px; }
     .hero-title         { font-size: 2rem; }
     .hero-subtitle      { font-size: 1rem; }
 
