@@ -70,6 +70,13 @@ const Modal = (() => {
                            placeholder="Calle, barrio, ciudad" autocomplete="street-address">
                 </div>
 
+                <!-- Cantidad -->
+                <div class="form-group">
+                    <label for="res-cantidad">Cantidad <span class="req">*</span></label>
+                    <input type="number" id="res-cantidad" name="cantidad" 
+                           value="1" min="1" required>
+                </div>
+
                 <!-- Método de pago -->
                 <div class="form-group">
                     <label>Método de pago <span class="req">*</span></label>
@@ -142,13 +149,14 @@ const Modal = (() => {
             telefono:  document.getElementById('res-telefono')?.value.trim(),
             direccion: document.getElementById('res-direccion')?.value.trim(),
             pago:      document.querySelector('input[name="pago"]:checked')?.value,
+            cantidad:  parseInt(document.getElementById('res-cantidad')?.value) || 1,
             fecha:     new Date().toLocaleDateString('es-CO', {
                             day: '2-digit', month: 'long', year: 'numeric'
                        }),
         };
 
         /* Validación básica */
-        if (!datos.nombre || !datos.telefono || !datos.direccion || !datos.pago) {
+        if (!datos.nombre || !datos.telefono || !datos.direccion || !datos.pago || !datos.cantidad) {
             mostrarError('Por favor completa todos los campos obligatorios.');
             return;
         }

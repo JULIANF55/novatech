@@ -213,6 +213,7 @@ const Productos = (() => {
                 <!-- Información del producto -->
                 <div class="product-info">
                     <h3 class="product-name">${producto.nombre}</h3>
+                    ${producto.enPromocion ? `<p class="product-price-original">$${formatearPrecio(producto.precioOriginal)}</p>` : ''}
                     <p class="product-price">$${formatearPrecio(producto.precio)}</p>
                     <p class="product-description">${producto.desc}</p>
 

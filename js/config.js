@@ -33,7 +33,7 @@ const CONFIG = {
        ────────────────────────────────────────────────────── */
     sheets: {
         urlCSV:    'https://docs.google.com/spreadsheets/d/e/2PACX-1vTOayVsY2f_IYvFnBKt2iNvpNvGLgFsllsq6SglLZbV2PnRhRagWAeTlvoRhr-aI0MID-6BCWVZ95jG/pub?gid=0&single=true&output=csv',
-        urlWebApp: 'https://script.google.com/macros/s/AKfycbxaLdz1eRZ7_nHx7m3_XIoxh_V9ZBE-oCnpJaJPT0q6BRpDXfaIBAO10bfEi745AXqLsw/exec'
+        urlWebApp: 'https://script.google.com/macros/s/AKfycbwoa1bBfq068rHSjV6eXYMNJY-ZJna697_4CuIb0qxvVjeqYF2XLc1UvIerta0vECil/exec'
     },
 
 

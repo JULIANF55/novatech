@@ -583,6 +583,13 @@ img {
     font-family: var(--font-title);
 }
 
+.product-price-original {
+    font-size: 1rem;
+    color: var(--gris-medio);
+    text-decoration: line-through;
+    margin-bottom: 4px;
+}
+
 .product-description {
     color: var(--gris-medio);
     font-size: .93rem;
