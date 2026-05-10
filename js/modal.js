@@ -73,8 +73,11 @@ const Modal = (() => {
                 <!-- Cantidad -->
                 <div class="form-group">
                     <label for="res-cantidad">Cantidad <span class="req">*</span></label>
-                    <input type="number" id="res-cantidad" name="cantidad" 
-                           value="1" min="1" required>
+                    <div class="qty-control">
+                        <button type="button" class="qty-btn qty-btn--minus" id="qtyMinus" aria-label="Disminuir cantidad">−</button>
+                        <input type="number" id="res-cantidad" name="cantidad" value="1" min="1" max="99" required readonly class="qty-input">
+                        <button type="button" class="qty-btn qty-btn--plus" id="qtyPlus" aria-label="Aumentar cantidad">+</button>
+                    </div>
                 </div>
 
                 <!-- Método de pago -->
@@ -88,11 +91,27 @@ const Modal = (() => {
                             </span>
                         </label>
                         <label class="payment-option">
+                            <input type="radio" name="pago" value="Daviplata" required>
+                            <span class="payment-label">
+                                <i class="fas fa-wallet"></i> Daviplata
+                            </span>
+                        </label>
+                        <label class="payment-option">
                             <input type="radio" name="pago" value="Contraentrega" required>
                             <span class="payment-label">
                                 <i class="fas fa-hand-holding-usd"></i> Contraentrega
                             </span>
                         </label>
+                    </div>
+                    <!-- Cuadro especial Nequi/Daviplata -->
+                    <div class="pago-instrucciones" id="pagoInstrucciones" style="display:none;">
+                        <div class="pago-instrucciones__header">
+                            <i class="fas fa-info-circle"></i>
+                            <strong>Instrucciones de pago</strong>
+                        </div>
+                        <p>Realiza tu pago al número:</p>
+                        <p class="pago-numero">📱 <strong>300 770 9585</strong></p>
+                        <p>Luego envía el <strong>soporte / comprobante</strong> a ese mismo número por WhatsApp.</p>
                     </div>
                 </div>
 
@@ -108,6 +127,26 @@ const Modal = (() => {
 
         /* Escuchar el submit del formulario */
         document.getElementById('reservationForm').addEventListener('submit', manejarEnvio);
+
+        // Mostrar instrucciones cuando eligen Nequi o Daviplata
+        document.querySelectorAll('input[name="pago"]').forEach(radio => {
+            radio.addEventListener('change', () => {
+                const instrucciones = document.getElementById('pagoInstrucciones');
+                if (!instrucciones) return;
+                const metodo = document.querySelector('input[name="pago"]:checked')?.value;
+                instrucciones.style.display = (metodo === 'Nequi' || metodo === 'Daviplata') ? 'block' : 'none';
+            });
+        });
+
+        // Controles de cantidad
+        document.getElementById('qtyMinus')?.addEventListener('click', () => {
+            const inp = document.getElementById('res-cantidad');
+            if (parseInt(inp.value) > 1) inp.value = parseInt(inp.value) - 1;
+        });
+        document.getElementById('qtyPlus')?.addEventListener('click', () => {
+            const inp = document.getElementById('res-cantidad');
+            inp.value = parseInt(inp.value) + 1;
+        });
 
         /* Mostrar el modal */
         modal.classList.add('active');

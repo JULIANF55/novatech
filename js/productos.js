@@ -65,8 +65,16 @@ const Productos = (() => {
     function inicializarStock() {
         stockLocal = {};
         productos.forEach(p => {
-            /* Si viene del CSV puede no tener unidades; se pone 0 */
             stockLocal[p.nombre] = parseInt(p.unidades) || 0;
+
+            // ── FIX: marcar promos también para productos demo ──
+            if (!p.enPromocion && p.descuento && parseInt(p.descuento) > 0) {
+                p.enPromocion    = true;
+                const descuento  = parseInt(p.descuento);
+                const precioNum  = parseInt(String(p.precio).replace(/[^0-9]/g, ''));
+                p.precioOriginal = p.precio;
+                p.precio         = Math.round(precioNum * (1 - descuento / 100)).toString();
+            }
         });
     }
 
@@ -227,21 +235,21 @@ const Productos = (() => {
                     </span>
 
                     <!-- Botón de reservar -->
-                    <button class="btn-reservar"
+                    <button class="btn-reservar btn-add-cart"
                             data-producto='${encodeURIComponent(JSON.stringify(producto))}'
                             ${agotado ? 'disabled' : ''}>
-                        <i class="fas fa-shopping-cart"></i>
-                        ${agotado ? 'No disponible' : 'Reservar'}
+                        <i class="fas fa-cart-plus"></i>
+                        ${agotado ? 'No disponible' : 'Agregar al carrito'}
                     </button>
                 </div>
             </div>`;
         }).join('');
 
         /* Asignar eventos a los botones de reservar */
-        grid.querySelectorAll('.btn-reservar:not([disabled])').forEach(btn => {
+        grid.querySelectorAll('.btn-add-cart:not([disabled])').forEach(btn => {
             btn.addEventListener('click', () => {
                 const data = JSON.parse(decodeURIComponent(btn.dataset.producto));
-                Modal.abrir(data, () => descontarStock(data.nombre));
+                Carrito.agregar(data);
             });
         });
     }

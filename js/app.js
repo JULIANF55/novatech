@@ -21,6 +21,8 @@ const App = (() => {
         FAQ.renderizar();        /* Renderizar el acordeón de FAQ */
         configurarNavegacion();  /* Menú hamburguesa responsive */
         configurarNavbarScroll();/* Sombra de navbar al hacer scroll */
+        configurarBuscador();   /* Buscador de productos en la navbar */
+        Carrito.inicializar(); /* Configurar carrito de compras flotante */
 
         console.log('✅ BDJJ Global listo');
     }
@@ -137,6 +139,67 @@ const App = (() => {
         init();
     }
 
+    /* ──────────────────────────────────────────────────────
+       CONFIGURAR BUSCADOR DEL NAVBAR
+       ────────────────────────────────────────────────────── */
+    function configurarBuscador() {
+        const input    = document.getElementById('navSearchInput');
+        const results  = document.getElementById('navSearchResults');
+        const clearBtn = document.getElementById('navSearchClear');
+        if (!input || !results) return;
+
+        input.addEventListener('input', () => {
+            const q = input.value.trim().toLowerCase();
+            clearBtn.style.display = q ? 'flex' : 'none';
+
+            if (!q) { results.style.display = 'none'; return; }
+
+            const productos = Productos.getProductos();
+            const matches   = productos.filter(p =>
+                p.nombre.toLowerCase().includes(q) ||
+                (p.desc  || '').toLowerCase().includes(q) ||
+                (p.cat   || '').toLowerCase().includes(q)
+            ).slice(0, 6);
+
+            if (matches.length === 0) {
+                results.innerHTML = `<div class="nav-search__no-result">😔 Sin resultados para "<strong>${q}</strong>"</div>`;
+            } else {
+                results.innerHTML = matches.map(p => `
+                    <div class="nav-search__item" data-nombre="${p.nombre}">
+                        ${p.imagen ? `<img src="${p.imagen}" alt="${p.nombre}" class="nav-search__thumb">` : '<span class="nav-search__emoji">📦</span>'}
+                        <div class="nav-search__item-info">
+                            <span class="nav-search__item-name">${p.nombre}</span>
+                            <span class="nav-search__item-cat">${p.cat} · $${parseInt(String(p.precio).replace(/[^0-9]/g,'')).toLocaleString('es-CO')}</span>
+                        </div>
+                        <button class="nav-search__item-btn">Reservar</button>
+                    </div>
+                `).join('');
+            }
+            results.style.display = 'block';
+
+            results.querySelectorAll('.nav-search__item-btn').forEach((btn, idx) => {
+                btn.addEventListener('click', () => {
+                    Modal.abrir(matches[idx], () => Productos.descontarStock(matches[idx].nombre));
+                    results.style.display = 'none';
+                    input.value = '';
+                    clearBtn.style.display = 'none';
+                });
+            });
+        });
+
+        clearBtn?.addEventListener('click', () => {
+            input.value = '';
+            results.style.display = 'none';
+            clearBtn.style.display = 'none';
+            input.focus();
+        });
+
+        document.addEventListener('click', e => {
+            if (!document.getElementById('navSearch')?.contains(e.target)) {
+                results.style.display = 'none';
+            }
+        });
+    }
 
     /* API pública (para debug desde la consola) */
     return { init };
