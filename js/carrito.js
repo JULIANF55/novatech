@@ -117,9 +117,9 @@ const Carrito = (() => {
 
     function checkout() {
         if (items.length === 0) return;
-        // Abrir el modal con el primer producto del carrito (flujo simple)
-        // Para una tienda real esto se expandiría a un flujo multi-producto
         const primer = items[0];
+        // Guardar cantidad del carrito para usarla en el modal
+        primer._cantidadCarrito = primer.qty;
         Modal.abrir(primer, () => {
             Productos.descontarStock(primer.nombre);
             items = [];

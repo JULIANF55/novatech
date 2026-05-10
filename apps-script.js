@@ -16,35 +16,51 @@ const SPREADSHEET_ID = '1M9zGHvMGoio8D3y8Y9fl_nKj6qoFc1quKlCMxh_Yzg8'; // El ID 
 const HOJA_RESERVAS = 'Reservas';
 const EMAIL_DESTINO = 'julianforero55555@gmail.com'; // Correo que recibe notificaciones
 
+// ── UTILIDAD: convierte cualquier formato de precio a número entero ──
+function limpiarPrecio(precio) {
+    const str = String(precio).replace(/[^0-9.,]/g, '');
+    if (str.includes('.') && str.includes(',')) {
+        return parseInt(str.replace(/\./g, '').replace(',', '.'));
+    }
+    if (str.includes('.') && str.split('.')[1]?.length === 3) {
+        return parseInt(str.replace('.', ''));
+    }
+    const num = parseFloat(str);
+    if (num < 1000) return Math.round(num * 1000);
+    return parseInt(num);
+}
+
 /**
- * doPost - Maneja las solicitudes POST entrantes
+ * doGet - Maneja las solicitudes GET entrantes
  */
-function doPost(e) {
+function doGet(e) {
   try {
-    // Parsear los datos recibidos
-    const data = JSON.parse(e.postData.contents);
-    
-    // Validar datos requeridos
+    const data = {
+        producto:     e.parameter.producto,
+        categoria:    e.parameter.categoria,
+        precio:       e.parameter.precio,
+        precioTotal:  e.parameter.precioTotal,
+        nombre:       e.parameter.nombre,
+        telefono:     e.parameter.telefono,
+        direccion:    e.parameter.direccion,
+        pago:         e.parameter.pago,
+        cantidad:     e.parameter.cantidad,
+        fecha:        e.parameter.fecha,
+    };
+
     if (!data.nombre || !data.telefono || !data.producto) {
       return ContentService
-        .createTextOutput(JSON.stringify({ 
-          success: false, 
-          error: 'Faltan datos requeridos: nombre, teléfono o producto' 
-        }))
+        .createTextOutput(JSON.stringify({ success: false, error: 'Faltan datos' }))
         .setMimeType(ContentService.MimeType.JSON);
     }
-    
-    // Guardar en la hoja de cálculo
+
     guardarReserva(data);
-    
-    // Enviar correo de notificación
     enviarCorreo(data);
-    
-    // Responder éxito
+
     return ContentService
-      .createTextOutput(JSON.stringify({ success: true, message: 'Reserva registrada exitosamente' }))
+      .createTextOutput(JSON.stringify({ success: true }))
       .setMimeType(ContentService.MimeType.JSON);
-      
+
   } catch (error) {
     return ContentService
       .createTextOutput(JSON.stringify({ success: false, error: error.toString() }))
@@ -63,23 +79,26 @@ function guardarReserva(data) {
   if (!sheet) {
     const newSheet = spreadsheet.insertSheet(HOJA_RESERVAS);
     newSheet.appendRow([
-      'fecha', 'producto', 'precio', 'nombre', 'telefono', 
-      'direccion', 'pago', 'cantidad'
+      'fecha', 'producto', 'precioUnitario', 'cantidad', 'precioTotal',
+      'nombre', 'telefono', 'direccion', 'pago'
     ]);
   }
   
   const targetSheet = spreadsheet.getSheetByName(HOJA_RESERVAS);
-  
+  const precioNum   = limpiarPrecio(data.precio);
+  const cantidad    = parseInt(data.cantidad) || 1;
+  const precioTotal = precioNum * cantidad;
   // Agregar la nueva reserva
   targetSheet.appendRow([
     data.fecha || new Date().toLocaleDateString('es-CO'),
     data.producto,
-    data.precio,
+    '$' + precioNum.toLocaleString('es-CO'),
+    cantidad,
+    '$' + precioTotal.toLocaleString('es-CO'),
     data.nombre,
     data.telefono,
     data.direccion,
-    data.pago,
-    data.cantidad || 1
+    data.pago
   ]);
   
   // Ordenar por fecha (opcional)
@@ -94,7 +113,10 @@ function enviarCorreo(data) {
   
   // URL de WhatsApp directo al cliente
   const urlWhatsApp = `https://wa.me/57${data.telefono.replace(/[^0-9]/g, '')}?text=${encodeURIComponent('¡Hola ' + data.nombre + '! Gracias por tu reserva en BDJJ Global. Te contactamos para confirmar los detalles de tu pedido.')}`;
-  
+  const precioNum   = limpiarPrecio(data.precio);
+  const cantidad    = parseInt(data.cantidad) || 1;
+  const precioTotal = precioNum * cantidad;
+
   const cuerpoHTML = `
     <!DOCTYPE html>
     <html>
@@ -112,6 +134,7 @@ function enviarCorreo(data) {
         .value { color: #666; }
         .badge { display: inline-block; padding: 5px 12px; border-radius: 20px; font-size: 14px; font-weight: bold; }
         .badge-nequi { background: #E8F5E9; color: #2E7D32; }
+        .badge-daviplata { background: #F3E5F5; color: #6A1B9A; }
         .badge-contraentrega { background: #FFF3E0; color: #E65100; }
         .btn-whatsapp { display: inline-block; background: #25D366; color: white; padding: 15px 30px; border-radius: 50px; text-decoration: none; font-weight: bold; margin-top: 20px; }
         .footer { background: #f8f9fa; padding: 20px; text-align: center; color: #666; font-size: 14px; }
@@ -127,20 +150,28 @@ function enviarCorreo(data) {
           <div class="info-box">
             <h3 style="margin-top: 0; color: #0F4FD1;">📦 Información del Producto</h3>
             <div class="info-item">
-              <span class="label">Producto:</span>
-              <span class="value">${data.producto}</span>
+                <span class="label">Producto:</span>
+                <span class="value">${data.producto}</span>
             </div>
             <div class="info-item">
-              <span class="label">Precio:</span>
-              <span class="value" style="font-weight: bold; color: #0F4FD1;">$${data.precio}</span>
+                <span class="label">Precio unitario:</span>
+                <span class="value" style="font-weight:bold;color:#0F4FD1;">$${precioNum.toLocaleString('es-CO')}</span>
             </div>
             <div class="info-item">
-              <span class="label">Método de Pago:</span>
-              <span class="value">
-                <span class="badge ${data.pago === 'Nequi' ? 'badge-nequi' : 'badge-contraentrega'}">
-                  ${data.pago === 'Nequi' ? '📱 Nequi' : '🤝 Contraentrega'}
+                <span class="label">Cantidad:</span>
+                <span class="value">${cantidad}</span>
+            </div>
+            <div class="info-item">
+                <span class="label">Total:</span>
+                <span class="value" style="font-weight:bold;color:#FF5C00;font-size:1.1em;">$${precioTotal.toLocaleString('es-CO')}</span>
+            </div>
+            <div class="info-item">
+                <span class="label">Método de Pago:</span>
+                <span class="value">
+                    <span class="badge ${data.pago === 'Nequi' ? 'badge-nequi' : data.pago === 'Daviplata' ? 'badge-daviplata' : 'badge-contraentrega'}">
+                        ${data.pago === 'Nequi' ? '📱 Nequi' : data.pago === 'Daviplata' ? '💜 Daviplata' : '🤝 Contraentrega'}
+                    </span>
                 </span>
-              </span>
             </div>
           </div>
           

@@ -14,7 +14,7 @@ const CONFIG = {
        Número de contacto principal (con código de país, sin +)
        ────────────────────────────────────────────────────── */
     whatsapp: {
-        numero: '573007709585',
+        numero: '573228546837',
         mensaje: '¡Hola! Quiero información sobre sus productos.',
 
         /* Construye la URL completa para abrir WhatsApp */
@@ -97,11 +97,11 @@ const CONFIG = {
     faq: [
         {
             pregunta:  '¿Cómo funciona la reserva?',
-            respuesta: 'Elige el producto que te interesa, haz clic en "Reservar", completa tus datos y selecciona tu método de pago: Nequi o contraentrega. Nuestro equipo se contactará contigo para confirmar los detalles.'
+            respuesta: 'Elige el producto que te interesa, haz clic en "Reservar", completa tus datos y selecciona tu método de pago: Nequi, Daviplata o contraentrega. Nuestro equipo se contactará contigo para confirmar los detalles.'
         },
         {
             pregunta:  '¿Cuáles son los métodos de pago?',
-            respuesta: 'Aceptamos pago por Nequi (transferencia inmediata) y contraentrega (pagas al recibir el producto). Próximamente más opciones de pago.'
+            respuesta: 'Aceptamos pago por Nequi, Daviplata (transferencia inmediata) y contraentrega (pagas al recibir el producto). Próximamente más opciones de pago.'
         },
         {
             pregunta:  '¿Cuánto tiempo tarda la entrega?',

@@ -60,7 +60,7 @@ const Modal = (() => {
                 <div class="form-group">
                     <label for="res-telefono">Teléfono <span class="req">*</span></label>
                     <input type="tel" id="res-telefono" name="telefono" required
-                           placeholder="Ej: 3007709585" autocomplete="tel">
+                           placeholder="Ej: 3228546837" autocomplete="tel">
                 </div>
 
                 <!-- Dirección de entrega -->
@@ -72,12 +72,17 @@ const Modal = (() => {
 
                 <!-- Cantidad -->
                 <div class="form-group">
-                    <label for="res-cantidad">Cantidad <span class="req">*</span></label>
+                    <label for="res-cantidad">Cantidad</label>
                     <div class="qty-control">
-                        <button type="button" class="qty-btn qty-btn--minus" id="qtyMinus" aria-label="Disminuir cantidad">−</button>
-                        <input type="number" id="res-cantidad" name="cantidad" value="1" min="1" max="99" required readonly class="qty-input">
-                        <button type="button" class="qty-btn qty-btn--plus" id="qtyPlus" aria-label="Aumentar cantidad">+</button>
+                        <button type="button" class="qty-btn qty-btn--minus" id="qtyMinus" 
+                                aria-label="Disminuir cantidad" ${producto._cantidadCarrito ? 'style="display:none"' : ''}>−</button>
+                        <input type="number" id="res-cantidad" name="cantidad" 
+                               value="${producto._cantidadCarrito || 1}" 
+                               min="1" max="99" required readonly class="qty-input">
+                        <button type="button" class="qty-btn qty-btn--plus" id="qtyPlus" 
+                                aria-label="Aumentar cantidad" ${producto._cantidadCarrito ? 'style="display:none"' : ''}>+</button>
                     </div>
+                    ${producto._cantidadCarrito ? `<small style="color:var(--gris-medio);margin-top:6px;display:block;">Cantidad seleccionada en el carrito</small>` : ''}
                 </div>
 
                 <!-- Método de pago -->
@@ -180,18 +185,23 @@ const Modal = (() => {
         const submitBtn = event.target.querySelector('.btn-submit');
 
         /* Recopilar datos */
+        const precioLimpio = parseInt(String(productoActual.precio).replace(/[^0-9]/g, ''));
+        const cantidadFinal = parseInt(document.getElementById('res-cantidad')?.value) || 1;
+            
         const datos = {
-            producto:  productoActual.nombre,
-            categoria: productoActual.cat,
-            precio:    formatearPrecio(productoActual.precio),
-            nombre:    document.getElementById('res-nombre')?.value.trim(),
-            telefono:  document.getElementById('res-telefono')?.value.trim(),
-            direccion: document.getElementById('res-direccion')?.value.trim(),
-            pago:      document.querySelector('input[name="pago"]:checked')?.value,
-            cantidad:  parseInt(document.getElementById('res-cantidad')?.value) || 1,
-            fecha:     new Date().toLocaleDateString('es-CO', {
-                            day: '2-digit', month: 'long', year: 'numeric'
-                       }),
+            producto:       productoActual.nombre,
+            categoria:      productoActual.cat,
+            precio:         precioLimpio.toLocaleString('es-CO'),
+            precioUnitario: precioLimpio.toLocaleString('es-CO'),
+            precioTotal:    (precioLimpio * cantidadFinal).toLocaleString('es-CO'),
+            nombre:         document.getElementById('res-nombre')?.value.trim(),
+            telefono:       document.getElementById('res-telefono')?.value.trim(),
+            direccion:      document.getElementById('res-direccion')?.value.trim(),
+            pago:           document.querySelector('input[name="pago"]:checked')?.value,
+            cantidad:       cantidadFinal,
+            fecha:          new Date().toLocaleDateString('es-CO', {
+                                day: '2-digit', month: 'long', year: 'numeric'
+                            }),
         };
 
         /* Validación básica */
@@ -232,11 +242,14 @@ const Modal = (() => {
        ────────────────────────────────────────────────────── */
     async function enviarAGoogleSheets(datos) {
         try {
-            await fetch(CONFIG.sheets.urlWebApp, {
-                method:  'POST',
-                mode:    'no-cors',
-                headers: { 'Content-Type': 'application/json' },
-                body:    JSON.stringify(datos),
+            const params = new URLSearchParams();
+            Object.keys(datos).forEach(key => {
+                params.append(key, datos[key]);
+            });
+        
+            await fetch(CONFIG.sheets.urlWebApp + '?' + params.toString(), {
+                method: 'GET',
+                mode:   'no-cors',
             });
             return true;
         } catch (err) {
@@ -244,7 +257,6 @@ const Modal = (() => {
             return false;
         }
     }
-
 
     /* ──────────────────────────────────────────────────────
        PANTALLA DE ÉXITO
@@ -279,6 +291,14 @@ const Modal = (() => {
                     <div class="success-row">
                         <span class="success-label">Dirección</span>
                         <span>${datos.direccion}</span>
+                    </div>
+                    <div class="success-row">
+                        <span class="success-label">Cantidad</span>
+                        <span>${datos.cantidad}</span>
+                    </div>
+                    <div class="success-row">
+                        <span class="success-label">Total</span>
+                        <span>$${datos.precioTotal}</span>
                     </div>
                 </div>
 
