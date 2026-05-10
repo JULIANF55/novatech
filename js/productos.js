@@ -96,6 +96,13 @@ const Productos = (() => {
             if (producto['categoría'])   producto.cat  = producto['categoría'];
             if (producto['descripción']) producto.desc = producto['descripción'];
             if (producto.nombre) resultado.push(producto);
+            if (producto.descuento && parseInt(producto.descuento) > 0) {
+                producto.enPromocion = true;
+                producto.precioOriginal = producto.precio;
+                const descuento = parseInt(producto.descuento);
+                const precioNum = parseInt(String(producto.precio).replace(/[^0-9]/g, ''));
+                producto.precio = Math.round(precioNum * (1 - descuento / 100)).toString();
+            }
         }
 
         return resultado;
@@ -171,7 +178,9 @@ const Productos = (() => {
         /* Filtrar por categoría */
         const lista = categoriaActiva === 'todas'
             ? productos
-            : productos.filter(p => p.cat === categoriaActiva);
+            : categoriaActiva === 'Promociones'
+                ? productos.filter(p => p.enPromocion)
+                : productos.filter(p => p.cat === categoriaActiva);
 
         if (lista.length === 0) {
             grid.innerHTML = `
@@ -197,6 +206,7 @@ const Productos = (() => {
                 <div class="product-image ${agotado ? 'agotado-overlay' : ''}">
                     ${imagenHTML}
                     <span class="product-category">${producto.cat}</span>
+                    ${producto.enPromocion ? `<span class="badge-descuento">-${producto.descuento}%</span>` : ''}
                     ${agotado ? '<span class="badge-agotado">Agotado</span>' : ''}
                 </div>
 

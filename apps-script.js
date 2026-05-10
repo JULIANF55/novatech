@@ -12,7 +12,7 @@
  */
 
 // ========== CONFIGURACIÓN (MODIFICA ESTOS VALORES) ==========
-const SPREADSHEET_ID = 'TU_ID_DE_SPREADSHEET_AQUI'; // El ID de tu Google Sheet
+const SPREADSHEET_ID = '1M9zGHvMGoio8D3y8Y9fl_nKj6qoFc1quKlCMxh_Yzg8'; // El ID de tu Google Sheet
 const HOJA_RESERVAS = 'Reservas';
 const EMAIL_DESTINO = 'julianforero55555@gmail.com'; // Correo que recibe notificaciones
 

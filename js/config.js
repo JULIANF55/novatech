@@ -51,11 +51,11 @@ const CONFIG = {
             foto:      'recursos/brandon.png'
         },
         {
-            nombre:    'Cristian Camacho',
+            nombre:    'David Camacho',
             rol:       'Co-fundador · Finanzas & Operaciones',
             bio:       'Experto en gestión financiera y administrativa. Garantiza la salud económica del negocio y la eficiencia en cada proceso operativo.',
             whatsapp:  '3168712103',
-            foto:      'recursos/cristian.png'
+            foto:      'recursos/david.png'
         },
         {
             nombre:    'Jhon Camacho',
@@ -81,6 +81,7 @@ const CONFIG = {
        ────────────────────────────────────────────────────── */
     categorias: [
         { id: 'todas',      nombre: 'Todas',       icono: '🛍️' },
+        { id: 'Promociones',  nombre: 'Promociones',  icono: '🔥' },
         { id: 'Teclados',      nombre: 'Teclados',        icono: '⌨️' },
         { id: 'Relojes',  nombre: 'Relojes',    icono: '⌚' },
         { id: 'Intercomunicador',nombre: 'Intercomunicador',  icono: '🖥️' },
