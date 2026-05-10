@@ -105,14 +105,24 @@ const App = (() => {
        ────────────────────────────────────────────────────── */
     function configurarNavbarScroll() {
         const navbar = document.getElementById('navbar');
-        if (!navbar) return;
-
+        const hero   = document.getElementById('inicio');
+        if (!navbar || !hero) return;
+    
+        /* Ajusta el padding del hero según la altura real de la navbar */
+        function ajustarHero() {
+            const alturaNavbar = navbar.offsetHeight;
+            hero.style.paddingTop = (alturaNavbar + 30) + 'px';
+        }
+    
+        ajustarHero();
+        window.addEventListener('resize', ajustarHero);
+    
         const actualizarNavbar = () => {
             navbar.classList.toggle('scrolled', window.scrollY > 50);
         };
-
+    
         window.addEventListener('scroll', actualizarNavbar, { passive: true });
-        actualizarNavbar(); /* Ejecutar al cargar por si la página ya scrolleó */
+        actualizarNavbar();
     }
 
 
