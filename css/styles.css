@@ -292,18 +292,6 @@ img {
 
 .hero-text   { flex: 1; }
 
-.hero-badge {
-    display: inline-block;
-    background: rgba(255,255,255,.18);
-    color: var(--blanco);
-    padding: 8px 22px;
-    border-radius: 50px;
-    font-size: .9rem;
-    margin-bottom: 20px;
-    backdrop-filter: blur(8px);
-    border: 1px solid rgba(255,255,255,.25);
-}
-
 .hero-title {
     font-size: 3.4rem;
     color: var(--blanco);

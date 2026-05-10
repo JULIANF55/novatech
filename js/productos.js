@@ -103,7 +103,6 @@ const Productos = (() => {
 
             if (producto['categoría'])   producto.cat  = producto['categoría'];
             if (producto['descripción']) producto.desc = producto['descripción'];
-            if (producto.nombre) resultado.push(producto);
             if (producto.descuento && parseInt(producto.descuento) > 0) {
                 producto.enPromocion = true;
                 producto.precioOriginal = producto.precio;
@@ -111,6 +110,7 @@ const Productos = (() => {
                 const precioNum = parseInt(String(producto.precio).replace(/[^0-9]/g, ''));
                 producto.precio = Math.round(precioNum * (1 - descuento / 100)).toString();
             }
+            if (producto.nombre) resultado.push(producto);
         }
 
         return resultado;
@@ -151,8 +151,11 @@ const Productos = (() => {
         const catsPresentes = new Set(productos.map(p => p.cat));
 
         /* Filtrar solo categorías que existen */
+        const hayPromociones = productos.some(p => p.enPromocion);
         const catsMostrar = CONFIG.categorias.filter(c =>
-            c.id === 'todas' || catsPresentes.has(c.id)
+            c.id === 'todas' ||
+            (c.id === 'Promociones' && hayPromociones) ||
+            catsPresentes.has(c.id)
         );
 
         contenedor.innerHTML = catsMostrar.map(c => `
