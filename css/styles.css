@@ -1,6 +1,6 @@
 /* ============================================================
    ARCHIVO: css/styles.css
-   PROPÓSITO: Estilos globales de NovaTech.
+   PROPÓSITO: Estilos globales de BDJJ Global.
    Organización:
      1. Variables y Reset
      2. Utilidades
@@ -666,8 +666,8 @@ img {
 
 .team-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
-    gap: 28px;
+    grid-template-columns:  repeat(4, 1fr);
+    gap: 20px;
 }
 
 .team-card {
@@ -1278,7 +1278,7 @@ img {
     }
 
     /* Hero */
-    .hero               { padding: 60px 0 100px; }
+    .hero               { padding: 100px 0 100px; }
     .hero-title         { font-size: 2rem; }
     .hero-subtitle      { font-size: 1rem; }
 
@@ -1292,7 +1292,7 @@ img {
     .products-grid      { grid-template-columns: 1fr; }
 
     /* Team: 1 columna */
-    .team-grid          { grid-template-columns: 1fr; }
+    .team-grid          { grid-template-columns: repeat(2, 1fr); }
 
     /* Pago: columna en móvil */
     .payment-options    { flex-direction: column; }
@@ -1319,6 +1319,8 @@ img {
 /* Móviles muy pequeños */
 @media (max-width: 480px) {
     .hero-title         { font-size: 1.75rem; }
+
+    .team-grid { grid-template-columns: 1fr; }
 
     .hero-buttons       { flex-direction: column; }
     .btn-primary,

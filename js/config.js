@@ -1,7 +1,7 @@
 /**
  * ============================================================
  * ARCHIVO: js/config.js
- * PROPÓSITO: Configuración centralizada de NovaTech.
+ * PROPÓSITO: Configuración centralizada de BDJJ Global.
  * EDITA ESTE ARCHIVO para cambiar teléfono, correo, productos,
  * categorías, FAQ y URLs de Google Sheets.
  * ============================================================
@@ -44,11 +44,11 @@ const CONFIG = {
        ────────────────────────────────────────────────────── */
     equipo: [
         {
-            nombre:    'Julian Forero',
-            rol:       'Co-fundador & CEO · Tecnología',
-            bio:       'Apasionado por la innovación y el mundo tech. Lidera la visión de NovaTech, la selección de productos de vanguardia y el desarrollo de la plataforma.',
-            whatsapp:  '3007709585',
-            foto:      'recursos/julian.png'
+            nombre:    'Brandon Martínez',
+            rol:       'Co-fundador · Marketing & Estrategia Comercial',
+            bio:       'Encargado de la estrategia comercial y el posicionamiento de la marca. Su enfoque está en atraer nuevos clientes, fortalecer la presencia de BDJJ Global y generar oportunidades de crecimiento.',
+            whatsapp:  '3104874938',
+            foto:      'recursos/brandon.png'
         },
         {
             nombre:    'Cristian Camacho',
@@ -63,70 +63,15 @@ const CONFIG = {
             bio:       'Especialista en ventas y relaciones con el cliente. Su misión es asegurar que cada comprador viva la mejor experiencia de principio a fin.',
             whatsapp:  '3014150819',
             foto:      'recursos/jhon.png'
-        }
+        },
+        {
+            nombre:    'Julian Forero',
+            rol:       'Co-fundador & CEO · Tecnología',
+            bio:       'Apasionado por la innovación y el mundo tech. Lidera la visión de BDJJ Global, la selección de productos de vanguardia y el desarrollo de la plataforma.',
+            whatsapp:  '3007709585',
+            foto:      'recursos/julian.png'
+        },
     ],
-
-
-    /* ──────────────────────────────────────────────────────
-       PRODUCTOS DEMO
-       Se muestran cuando no hay CSV configurado o falla la carga.
-       Campos:
-         nombre   → nombre visible del producto
-         cat      → categoría (debe coincidir con CONFIG.categorias)
-         precio   → precio en pesos colombianos (string o número)
-         desc     → descripción corta
-         stock    → 'Disponible' | 'Agotado'
-         unidades → número de unidades disponibles (entero)
-         imagen   → ruta relativa a la imagen del producto
-       ────────────────────────────────────────────────────── */
-    productosDemo: [
-        {
-            nombre:   'Auriculares Bluetooth Pro',
-            cat:      'Audio',
-            precio:   '89900',
-            desc:     'Sonido premium con cancelación de ruido activa y 30 horas de batería continua.',
-            stock:    'Disponible',
-            unidades: 8,
-            imagen:   'recursos/audifonos.png'
-        },
-        {
-            nombre:   'Smartwatch Fitness',
-            cat:      'Wearables',
-            precio:   '149900',
-            desc:     'Monitor de salud 24/7 con GPS integrado, pantalla AMOLED y resistencia al agua.',
-            stock:    'Disponible',
-            unidades: 5,
-            imagen:   'recursos/reloj.png'
-        },
-        {
-            nombre:   'Teclado Mecánico RGB',
-            cat:      'Periféricos',
-            precio:   '129900',
-            desc:     'Switches mecánicos de alta durabilidad con iluminación RGB personalizable por tecla.',
-            stock:    'Disponible',
-            unidades: 6,
-            imagen:   'recursos/teclado.png'
-        },
-        {
-            nombre:   'Intercomunicador Smart HD',
-            cat:      'Hogar',
-            precio:   '199900',
-            desc:     'Sistema de intercomunicación inteligente con video Full HD y acceso remoto desde el móvil.',
-            stock:    'Disponible',
-            unidades: 4,
-            imagen:   'recursos/intercomunicador.png'
-        },
-        {
-            nombre:   'Smartphone Gama Alta',
-            cat:      'Celulares',
-            precio:   '799900',
-            desc:     'Procesador de última generación, cámara de 108 MP y batería de larga duración. Diseño premium.',
-            stock:    'Disponible',
-            unidades: 3,
-            imagen:   'recursos/celular.png'
-        }
-    ],
-
 
     /* ──────────────────────────────────────────────────────
        CATEGORÍAS
@@ -136,11 +81,11 @@ const CONFIG = {
        ────────────────────────────────────────────────────── */
     categorias: [
         { id: 'todas',      nombre: 'Todas',       icono: '🛍️' },
-        { id: 'Audio',      nombre: 'Audio',        icono: '🎧' },
-        { id: 'Wearables',  nombre: 'Wearables',    icono: '⌚' },
-        { id: 'Periféricos',nombre: 'Periféricos',  icono: '🖥️' },
-        { id: 'Hogar',      nombre: 'Hogar',        icono: '🏠' },
-        { id: 'Celulares',  nombre: 'Celulares',    icono: '📱' }
+        { id: 'Teclados',      nombre: 'Teclados',        icono: '⌨️' },
+        { id: 'Relojes',  nombre: 'Relojes',    icono: '⌚' },
+        { id: 'Intercomunicador',nombre: 'Intercomunicador',  icono: '🖥️' },
+        { id: 'Celulares',      nombre: 'Celulares',        icono: '📱' },
+        { id: 'Audifonos',  nombre: 'Audifonos',    icono: '🎧' }
     ],
 
 

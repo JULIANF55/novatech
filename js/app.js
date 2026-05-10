@@ -1,7 +1,7 @@
 /**
  * ============================================================
  * ARCHIVO: js/app.js
- * PROPÓSITO: Punto de entrada de la aplicación NovaTech.
+ * PROPÓSITO: Punto de entrada de la aplicación BDJJ Global.
  * Inicializa todos los módulos y configura la navegación,
  * el scroll de la navbar y los botones de WhatsApp.
  * ============================================================
@@ -14,7 +14,7 @@ const App = (() => {
        Se ejecuta cuando el DOM está completamente cargado.
        ────────────────────────────────────────────────────── */
     function init() {
-        console.log('⚡ NovaTech inicializando...');
+        console.log('⚡ BDJJ Global inicializando...');
 
         configurarWhatsApp();    /* Asignar URLs a todos los botones WA */
         Productos.cargar();      /* Cargar y renderizar el catálogo */
@@ -22,7 +22,7 @@ const App = (() => {
         configurarNavegacion();  /* Menú hamburguesa responsive */
         configurarNavbarScroll();/* Sombra de navbar al hacer scroll */
 
-        console.log('✅ NovaTech listo');
+        console.log('✅ BDJJ Global listo');
     }
 
 

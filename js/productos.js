@@ -40,8 +40,8 @@ const Productos = (() => {
                 if (productos.length === 0) throw new Error('CSV sin datos');
 
             } catch (error) {
-                console.warn('CSV no disponible, usando demo:', error.message);
-                productos = CONFIG.productosDemo.map(p => ({ ...p }));
+                console.warn('CSV no disponible:', error.message);
+                productos = [];  
             }
         } else {
             /* Clonar para no mutar el original de CONFIG */
@@ -65,8 +65,8 @@ const Productos = (() => {
     function inicializarStock() {
         stockLocal = {};
         productos.forEach(p => {
-            /* Si viene del CSV puede no tener unidades; se pone 99 */
-            stockLocal[p.nombre] = parseInt(p.unidades) || 99;
+            /* Si viene del CSV puede no tener unidades; se pone 0 */
+            stockLocal[p.nombre] = parseInt(p.unidades) || 0;
         });
     }
 
@@ -93,6 +93,8 @@ const Productos = (() => {
                 producto[col] = (valores[idx] || '').trim().replace(/^"|"$/g, '');
             });
 
+            if (producto['categoría'])   producto.cat  = producto['categoría'];
+            if (producto['descripción']) producto.desc = producto['descripción'];
             if (producto.nombre) resultado.push(producto);
         }
 

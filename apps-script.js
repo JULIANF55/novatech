@@ -14,7 +14,7 @@
 // ========== CONFIGURACIÓN (MODIFICA ESTOS VALORES) ==========
 const SPREADSHEET_ID = 'TU_ID_DE_SPREADSHEET_AQUI'; // El ID de tu Google Sheet
 const HOJA_RESERVAS = 'Reservas';
-const EMAIL_DESTINO = 'info@novatech.com'; // Correo que recibe notificaciones
+const EMAIL_DESTINO = 'julianforero55555@gmail.com'; // Correo que recibe notificaciones
 
 /**
  * doPost - Maneja las solicitudes POST entrantes
@@ -63,8 +63,8 @@ function guardarReserva(data) {
   if (!sheet) {
     const newSheet = spreadsheet.insertSheet(HOJA_RESERVAS);
     newSheet.appendRow([
-      'Fecha', 'Producto', 'Precio', 'Nombre', 'Teléfono', 
-      'Dirección', 'Método de Pago', 'Estado'
+      'fecha', 'producto', 'precio', 'nombre', 'telefono', 
+      'direccion', 'pago', 'cantidad'
     ]);
   }
   
@@ -79,7 +79,7 @@ function guardarReserva(data) {
     data.telefono,
     data.direccion,
     data.pago,
-    'Pendiente' // Estado inicial
+    data.cantidad || 1
   ]);
   
   // Ordenar por fecha (opcional)
@@ -93,7 +93,7 @@ function enviarCorreo(data) {
   const asunto = `🔔 Nueva Reserva - ${data.producto} - ${data.nombre}`;
   
   // URL de WhatsApp directo al cliente
-  const urlWhatsApp = `https://wa.me/57${data.telefono.replace(/[^0-9]/g, '')}?text=${encodeURIComponent('¡Hola ' + data.nombre + '! Gracias por tu reserva en NovaTech. Te contactamos para confirmar los detalles de tu pedido.')}`;
+  const urlWhatsApp = `https://wa.me/57${data.telefono.replace(/[^0-9]/g, '')}?text=${encodeURIComponent('¡Hola ' + data.nombre + '! Gracias por tu reserva en BDJJ Global. Te contactamos para confirmar los detalles de tu pedido.')}`;
   
   const cuerpoHTML = `
     <!DOCTYPE html>
@@ -167,7 +167,7 @@ function enviarCorreo(data) {
           </div>
         </div>
         <div class="footer">
-          <p>⚡ NovaTech - Tecnología que impulsa tu mundo</p>
+          <p>⚡ BDJJ Global - Tecnología que impulsa tu mundo</p>
           <p>Este es un correo automático de notificación de reserva.</p>
         </div>
       </div>
@@ -199,7 +199,8 @@ function testDoPost() {
     nombre: 'Juan Pérez',
     telefono: '3001234567',
     direccion: 'Calle 123 #45-67, Bogotá',
-    pago: 'Nequi'
+    pago: 'Nequi',
+    cantidad: 1
   };
   
   const e = {
