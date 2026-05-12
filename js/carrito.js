@@ -1,7 +1,7 @@
 /**
  * ============================================================
  * ARCHIVO: js/carrito.js
- * PROPÓSITO: Carrito de compras flotante.
+ * PROPÓSITO: Carrito flotante y panel lateral.
  * ============================================================
  */
 
@@ -9,19 +9,16 @@ const Carrito = (() => {
 
     let items = [];
 
-    // Inyectar HTML del carrito en el body
     function inicializar() {
-        document.body.insertAdjacentHTML('beforeend', `
-            <!-- Botón flotante carrito -->
+        const root = document.getElementById('carrito-root');
+        if (!root) return;
+
+        root.innerHTML = `
             <button class="cart-fab" id="cartFab" aria-label="Ver carrito">
                 <i class="fas fa-shopping-cart"></i>
                 <span class="cart-fab__badge" id="cartBadge">0</span>
             </button>
-
-            <!-- Overlay -->
             <div class="cart-panel__overlay" id="cartOverlay"></div>
-
-            <!-- Panel lateral -->
             <div class="cart-panel" id="cartPanel" role="dialog" aria-label="Carrito de compras">
                 <div class="cart-panel__header">
                     <span class="cart-panel__title">🛒 Tu Carrito</span>
@@ -38,7 +35,7 @@ const Carrito = (() => {
                     </button>
                 </div>
             </div>
-        `);
+        `;
 
         document.getElementById('cartFab').addEventListener('click', abrir);
         document.getElementById('cartClose').addEventListener('click', cerrar);
@@ -47,11 +44,12 @@ const Carrito = (() => {
     }
 
     function agregar(producto) {
+        const qty = producto._cantidadModal || 1;
         const idx = items.findIndex(i => i.nombre === producto.nombre);
         if (idx >= 0) {
-            items[idx].qty++;
+            items[idx].qty += qty;
         } else {
-            items.push({ ...producto, qty: 1 });
+            items.push({ ...producto, qty });
         }
         actualizar();
         abrir();
@@ -59,16 +57,16 @@ const Carrito = (() => {
 
     function actualizar() {
         const total = items.reduce((s, i) => {
-            const p = parseInt(String(i.precio).replace(/[^0-9]/g,''));
+            const p = parseInt(String(i.precio).replace(/[^0-9]/g, ''));
             return s + p * i.qty;
         }, 0);
 
-        const badge = document.getElementById('cartBadge');
         const totalCount = items.reduce((s, i) => s + i.qty, 0);
+        const badge = document.getElementById('cartBadge');
         badge.textContent = totalCount;
         badge.classList.toggle('visible', totalCount > 0);
 
-        document.getElementById('cartTotal').textContent = '$' + total.toLocaleString('es-CO');
+        document.getElementById('cartTotal').textContent = '$' + Utils.formatPrice(total);
         document.getElementById('cartCheckout').disabled = items.length === 0;
 
         const body = document.getElementById('cartBody');
@@ -78,19 +76,20 @@ const Carrito = (() => {
         }
 
         body.innerHTML = items.map((item, idx) => {
-            const precio = parseInt(String(item.precio).replace(/[^0-9]/g,''));
+            const precio = parseInt(String(item.precio).replace(/[^0-9]/g, ''));
             return `
             <div class="cart-item">
                 ${item.imagen
-                    ? `<img src="${item.imagen}" alt="${item.nombre}" class="cart-item__img">`
-                    : `<span class="cart-item__emoji">📦</span>`}
+                    ?`<img src="productos/${item.imagen}.png" alt="${Utils.escapeHtml(item.nombre)}" class="cart-item__img">`
+                    : `<span class="cart-item__emoji">📦</span>`
+                }
                 <div class="cart-item__info">
-                    <p class="cart-item__name">${item.nombre}</p>
-                    <p class="cart-item__price">$${(precio * item.qty).toLocaleString('es-CO')}</p>
+                    <p class="cart-item__name">${Utils.escapeHtml(item.nombre)}</p>
+                    <p class="cart-item__price">$${Utils.formatPrice(precio * item.qty)}</p>
                     <div class="cart-item__qty">
-                        <button data-idx="${idx}" data-action="minus">−</button>
+                        <button data-idx="${idx}" data-action="minus" aria-label="Disminuir">−</button>
                         <span>${item.qty}</span>
-                        <button data-idx="${idx}" data-action="plus">+</button>
+                        <button data-idx="${idx}" data-action="plus" aria-label="Aumentar">+</button>
                     </div>
                 </div>
                 <button class="cart-item__remove" data-idx="${idx}" aria-label="Eliminar"><i class="fas fa-trash"></i></button>
@@ -118,9 +117,9 @@ const Carrito = (() => {
     function checkout() {
         if (items.length === 0) return;
         const primer = items[0];
-        // Guardar cantidad del carrito para usarla en el modal
         primer._cantidadCarrito = primer.qty;
-        Modal.abrir(primer, () => {
+        cerrar();
+        ReservaModal.abrir(primer, () => {
             Productos.descontarStock(primer.nombre);
             items = [];
             actualizar();

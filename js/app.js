@@ -1,207 +1,90 @@
 /**
  * ============================================================
  * ARCHIVO: js/app.js
- * PROPÓSITO: Punto de entrada de la aplicación BDJJ Global.
- * Inicializa todos los módulos y configura la navegación,
- * el scroll de la navbar y los botones de WhatsApp.
+ * PROPÓSITO: Orquestador único. Inicializa componentes
+ * compartidos y delega a cada módulo según la página.
  * ============================================================
  */
 
 const App = (() => {
 
-    /* ──────────────────────────────────────────────────────
-       INICIALIZAR
-       Se ejecuta cuando el DOM está completamente cargado.
-       ────────────────────────────────────────────────────── */
     function init() {
         console.log('⚡ BDJJ Global inicializando...');
 
-        configurarWhatsApp();    /* Asignar URLs a todos los botones WA */
-        Productos.cargar();      /* Cargar y renderizar el catálogo */
-        FAQ.renderizar();        /* Renderizar el acordeón de FAQ */
-        configurarNavegacion();  /* Menú hamburguesa responsive */
-        configurarNavbarScroll();/* Sombra de navbar al hacer scroll */
-        configurarBuscador();   /* Buscador de productos en la navbar */
-        Carrito.inicializar(); /* Configurar carrito de compras flotante */
+        Utils.renderNavbar();
+        Utils.renderFooter();
+        Utils.renderWhatsAppFloat();
+        configurarWhatsApp();
+        configurarNavbarScroll();
+
+        const page = Utils.getPageName();
+
+        if (page === '' || page === 'index.html') {
+            Productos.cargar();
+        }       
+
+        if (page === '' || page === 'index.html' || page === 'producto.html') {
+            Carrito.inicializar();
+        }
+
+        if (document.getElementById('faqContainer')) {
+            FAQ.renderizar();
+        }
+
+        if (document.getElementById('teamGrid')) {
+            renderizarEquipo();
+        }
 
         console.log('✅ BDJJ Global listo');
     }
 
-
-    /* ──────────────────────────────────────────────────────
-       CONFIGURAR WHATSAPP
-       Asigna la URL correcta a todos los botones de WhatsApp
-       definidos en el HTML: navbar, hero y flotante.
-       ────────────────────────────────────────────────────── */
     function configurarWhatsApp() {
-        const url = CONFIG.whatsapp.getUrl();
-
-        /* Botón en la barra de navegación */
-        const btnNav = document.getElementById('whatsappNavBtn');
-        if (btnNav) {
-            btnNav.href   = url;
-            btnNav.target = '_blank';
-            btnNav.rel    = 'noopener noreferrer';
-        }
-
-        /* Botón "Escríbenos" en el hero */
-        const btnHero = document.getElementById('whatsappHeroBtn');
-        if (btnHero) {
-            btnHero.href   = url;
-            btnHero.target = '_blank';
-            btnHero.rel    = 'noopener noreferrer';
-        }
-
-        /* Botón flotante fijo en la esquina inferior derecha */
-        const btnFlotante = document.getElementById('whatsappFloat');
-        if (btnFlotante) {
-            btnFlotante.href   = url;
-            btnFlotante.target = '_blank';
-            btnFlotante.rel    = 'noopener noreferrer';
-        }
-    }
-
-
-    /* ──────────────────────────────────────────────────────
-       CONFIGURAR NAVEGACIÓN RESPONSIVE
-       Controla el menú hamburguesa en móviles: abre/cierra
-       el menú y lo cierra al hacer clic en un enlace.
-       ────────────────────────────────────────────────────── */
-    function configurarNavegacion() {
-        const hamburger = document.getElementById('hamburgerBtn');
-        const navLinks  = document.getElementById('navLinks');
-
-        if (!hamburger || !navLinks) return;
-
-        /* Abrir / cerrar menú al hacer clic en el ícono */
-        hamburger.addEventListener('click', () => {
-            const estaAbierto = navLinks.classList.toggle('active');
-            hamburger.setAttribute('aria-expanded', estaAbierto);
-            hamburger.classList.toggle('open', estaAbierto);
-        });
-
-        /* Cerrar menú al hacer clic en cualquier enlace */
-        navLinks.querySelectorAll('a').forEach(enlace => {
-            enlace.addEventListener('click', () => {
-                navLinks.classList.remove('active');
-                hamburger.classList.remove('open');
-                hamburger.setAttribute('aria-expanded', 'false');
-            });
-        });
-
-        /* Cerrar menú al hacer clic fuera de él */
-        document.addEventListener('click', e => {
-            if (!hamburger.contains(e.target) && !navLinks.contains(e.target)) {
-                navLinks.classList.remove('active');
-                hamburger.classList.remove('open');
-                hamburger.setAttribute('aria-expanded', 'false');
+        const url = Utils.getWhatsAppUrl();
+        ['whatsappNavBtn', 'whatsappHeroBtn', 'whatsappFloat', 'whatsappFaqBtn'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el && el.tagName === 'A') {
+                el.href = url;
+                el.target = '_blank';
+                el.rel = 'noopener noreferrer';
             }
         });
     }
 
-
-    /* ──────────────────────────────────────────────────────
-       CONFIGURAR SCROLL DE NAVBAR
-       Añade la clase "scrolled" a la navbar cuando el usuario
-       ha hecho scroll, lo que activa una sombra más pronunciada.
-       ────────────────────────────────────────────────────── */
     function configurarNavbarScroll() {
         const navbar = document.getElementById('navbar');
-        const hero   = document.getElementById('inicio');
-        if (!navbar || !hero) return;
-    
-        /* Ajusta el padding del hero según la altura real de la navbar */
-        function ajustarHero() {
-            const alturaNavbar = navbar.offsetHeight;
-            hero.style.paddingTop = (alturaNavbar + 30) + 'px';
-        }
-    
-        ajustarHero();
-        window.addEventListener('resize', ajustarHero);
-    
-        const actualizarNavbar = () => {
-            navbar.classList.toggle('scrolled', window.scrollY > 50);
-        };
-    
-        window.addEventListener('scroll', actualizarNavbar, { passive: true });
-        actualizarNavbar();
+        if (!navbar) return;
+        const actualizar = () => navbar.classList.toggle('scrolled', window.scrollY > 50);
+        window.addEventListener('scroll', actualizar, { passive: true });
+        actualizar();
     }
 
+    function renderizarEquipo() {
+        const grid = document.getElementById('teamGrid');
+        if (!grid || !CONFIG.equipo) return;
 
-    /* ──────────────────────────────────────────────────────
-       ARRANCAR
-       Si el DOM ya está listo se inicializa de inmediato;
-       de lo contrario espera el evento DOMContentLoaded.
-       ────────────────────────────────────────────────────── */
+        grid.innerHTML = CONFIG.equipo.map(m => `
+            <div class="team-card">
+                <img src="${m.foto}" alt="${Utils.escapeHtml(m.nombre)}" class="team-avatar" loading="lazy"
+                     onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(m.nombre)}&background=0F4FD1&color=fff&size=110'">
+                <h3 class="team-name">${Utils.escapeHtml(m.nombre)}</h3>
+                <p class="team-role">${Utils.escapeHtml(m.rol)}</p>
+                <p class="team-bio">${Utils.escapeHtml(m.bio)}</p>
+                <div class="team-social">
+                    <a href="https://wa.me/57${m.whatsapp}" class="social-link-wa" target="_blank" rel="noopener">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                        WhatsApp
+                    </a>
+                </div>
+            </div>
+        `).join('');
+    }
+
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', init);
     } else {
         init();
     }
 
-    /* ──────────────────────────────────────────────────────
-       CONFIGURAR BUSCADOR DEL NAVBAR
-       ────────────────────────────────────────────────────── */
-    function configurarBuscador() {
-        const input    = document.getElementById('navSearchInput');
-        const results  = document.getElementById('navSearchResults');
-        const clearBtn = document.getElementById('navSearchClear');
-        if (!input || !results) return;
-
-        input.addEventListener('input', () => {
-            const q = input.value.trim().toLowerCase();
-            clearBtn.style.display = q ? 'flex' : 'none';
-
-            if (!q) { results.style.display = 'none'; return; }
-
-            const productos = Productos.getProductos();
-            const matches   = productos.filter(p =>
-                p.nombre.toLowerCase().includes(q) ||
-                (p.desc  || '').toLowerCase().includes(q) ||
-                (p.cat   || '').toLowerCase().includes(q)
-            ).slice(0, 6);
-
-            if (matches.length === 0) {
-                results.innerHTML = `<div class="nav-search__no-result">😔 Sin resultados para "<strong>${q}</strong>"</div>`;
-            } else {
-                results.innerHTML = matches.map(p => `
-                    <div class="nav-search__item" data-nombre="${p.nombre}">
-                        ${p.imagen ? `<img src="${p.imagen}" alt="${p.nombre}" class="nav-search__thumb">` : '<span class="nav-search__emoji">📦</span>'}
-                        <div class="nav-search__item-info">
-                            <span class="nav-search__item-name">${p.nombre}</span>
-                            <span class="nav-search__item-cat">${p.cat} · $${parseInt(String(p.precio).replace(/[^0-9]/g,'')).toLocaleString('es-CO')}</span>
-                        </div>
-                        <button class="nav-search__item-btn">Reservar</button>
-                    </div>
-                `).join('');
-            }
-            results.style.display = 'block';
-
-            results.querySelectorAll('.nav-search__item-btn').forEach((btn, idx) => {
-                btn.addEventListener('click', () => {
-                    Modal.abrir(matches[idx], () => Productos.descontarStock(matches[idx].nombre));
-                    results.style.display = 'none';
-                    input.value = '';
-                    clearBtn.style.display = 'none';
-                });
-            });
-        });
-
-        clearBtn?.addEventListener('click', () => {
-            input.value = '';
-            results.style.display = 'none';
-            clearBtn.style.display = 'none';
-            input.focus();
-        });
-
-        document.addEventListener('click', e => {
-            if (!document.getElementById('navSearch')?.contains(e.target)) {
-                results.style.display = 'none';
-            }
-        });
-    }
-
-    /* API pública (para debug desde la consola) */
     return { init };
 
 })();

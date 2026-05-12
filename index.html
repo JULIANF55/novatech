@@ -4,132 +4,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="BDJJ Global – Tecnología de vanguardia en Colombia. Reserva y paga con Nequi, Daviplata o contraentrega. Envío a domicilio.">
-
     <title>BDJJ Global – Tecnología que impulsa tu mundo</title>
-
-    <!-- Fuentes de Google -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
-    <!-- Font Awesome (íconos) -->
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;500;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <!-- Estilos propios -->
     <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/catalogo.css">
+    <link rel="stylesheet" href="css/reserva-modal.css">
+    <link rel="stylesheet" href="css/carrito.css">
 </head>
 <body>
 
-    <!-- ════════════════════════════════════════════════════
-         NAVBAR – Barra de navegación fija
-         ════════════════════════════════════════════════════ -->
-    <nav class="navbar" id="navbar" role="navigation" aria-label="Navegación principal">
-        <div class="container nav-container">
+    <div id="navbar-root"></div>
 
-            <!-- Logo -->
-            <a href="#inicio" class="logo" aria-label="BDJJ Global inicio">
-                <span class="logo-icon">⚡</span>
-                <span class="logo-text">BDJJ<span class="logo-highlight">Global</span></span>
-            </a>
-
-            <!-- Buscador central en el navbar -->
-            <div class="nav-search" id="navSearch">
-                <div class="nav-search__inner">
-                    <i class="fas fa-search nav-search__icon" aria-hidden="true"></i>
-                    <input type="text"
-                           id="navSearchInput"
-                           class="nav-search__input"
-                           placeholder="¿Qué estás buscando?"
-                           autocomplete="off"
-                           aria-label="Buscar productos">
-                    <button class="nav-search__clear" id="navSearchClear" aria-label="Limpiar búsqueda" style="display:none;">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-                <div class="nav-search__results" id="navSearchResults" style="display:none;"></div>
-            </div>
-
-            <!-- Menú de navegación -->
-            <ul class="nav-links" id="navLinks">
-                <li><a href="#catalogo"     class="nav-link">Productos</a></li>
-                <li><a href="nosotros.html" class="nav-link">Nosotros</a></li>
-                <li><a href="faq.html"      class="nav-link">FAQ</a></li>
-
-                <!-- Botón WhatsApp en la navbar -->
-                <li>
-                    <a href="#"
-                       class="btn-whatsapp-nav"
-                       id="whatsappNavBtn"
-                       target="_blank"
-                       rel="noopener noreferrer"
-                       aria-label="Contactar por WhatsApp">
-                        <!-- Ícono SVG de WhatsApp -->
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-                        </svg>
-                        WhatsApp
-                    </a>
-                </li>
-            </ul>
-
-            <!-- Botón hamburguesa para móviles -->
-            <button class="hamburger" id="hamburgerBtn"
-                    aria-label="Abrir menú de navegación"
-                    aria-expanded="false"
-                    aria-controls="navLinks">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
-        </div>
-    </nav>
-
-
-    <!-- ════════════════════════════════════════════════════
-         HERO – Cabecera principal con video de fondo
-         ════════════════════════════════════════════════════ -->
     <header class="hero" id="inicio">
-
-        <!-- Video de fondo (muted y autoplay para que no bloquee) -->
-        <video class="hero-video"
-               src="recursos/fondo.mp4"
-               autoplay
-               muted
-               loop
-               playsinline
-               aria-hidden="true">
-        </video>
-
-        <!-- Capa oscura semitransparente sobre el video -->
+        <video class="hero-video" src="recursos/fondo.mp4" autoplay muted loop playsinline aria-hidden="true"></video>
         <div class="hero-overlay" aria-hidden="true"></div>
-
-        <!-- Contenido principal del hero -->
         <div class="hero-content">
             <div class="hero-text">
-
-                <!-- Título principal -->
-                <h1 class="hero-title">
-                    Impulsa tu mundo con
-                    <span class="text-highlight">BDJJ Global</span>
-                </h1>
-
-                <!-- Descripción -->
-                <p class="hero-subtitle">
-                    Descubre los mejores productos tecnológicos. Reserva ahora y paga
-                    con Nequi, Daviplata o contraentrega. ¡Sin complicaciones!
-                </p>
-
-                <!-- Botones de acción -->
+                <h1 class="hero-title">Impulsa tu mundo con <span class="text-highlight">BDJJ Global</span></h1>
+                <p class="hero-subtitle">Descubre los mejores productos tecnológicos. Reserva ahora y paga con Nequi, Daviplata o contraentrega. ¡Sin complicaciones!</p>
                 <div class="hero-buttons">
-                    <a href="#catalogo" class="btn-primary">
-                        <i class="fas fa-shopping-bag"></i> Ver Productos
-                    </a>
-                    <a href="#" class="btn-secondary" id="whatsappHeroBtn">
-                        <i class="fab fa-whatsapp"></i> Escríbenos
-                    </a>
+                    <a href="#catalogo" class="btn-primary"><i class="fas fa-shopping-bag"></i> Ver Productos</a>
+                    <a href="#" class="btn-secondary" id="whatsappHeroBtn"><i class="fab fa-whatsapp"></i> Escríbenos</a>
                 </div>
-
-                <!-- Badges de confianza -->
                 <div class="trust-badges" aria-label="Garantías y ventajas">
                     <span class="trust-badge">✅ Sin tarjeta requerida</span>
                     <span class="trust-badge">💬 Soporte por WhatsApp</span>
@@ -137,43 +36,25 @@
                     <span class="trust-badge">📦 Envío a domicilio</span>
                 </div>
             </div>
-
-            <!-- Imagen decorativa lateral (se oculta en móvil) -->
             <div class="hero-image" aria-hidden="true">
-                <img src="recursos/fondo.png"
-                     alt="Productos tecnológicos BDJJ Global"
-                     class="hero-ilustracion"
-                     loading="eager">
+                <img src="recursos/fondo.png" alt="Productos tecnológicos BDJJ Global" class="hero-ilustracion" loading="eager">
             </div>
         </div>
-
-        <!-- Onda decorativa en la parte inferior del hero -->
         <div class="wave" aria-hidden="true">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 100" preserveAspectRatio="none">
-                <path fill="#F5F5F5" fill-opacity="1"
-                      d="M0,40 C360,100 1080,0 1440,60 L1440,100 L0,100 Z"/>
+                <path fill="#F5F5F5" fill-opacity="1" d="M0,40 C360,100 1080,0 1440,60 L1440,100 L0,100 Z"/>
             </svg>
         </div>
     </header>
 
-
-    <!-- ════════════════════════════════════════════════════
-         CATÁLOGO – Grid de productos con filtros
-         ════════════════════════════════════════════════════ -->
     <section class="catalog" id="catalogo" aria-label="Catálogo de productos">
         <div class="container">
-
             <div class="section-header">
                 <h2 class="section-title">Nuestro <span class="text-highlight">Catálogo</span></h2>
                 <p class="section-subtitle">Explora nuestra selección de productos tecnológicos</p>
             </div>
-
-            <!-- Filtros de categoría (se generan dinámicamente desde js/productos.js) -->
             <div class="filters" id="categoryFilters" role="group" aria-label="Filtrar por categoría"></div>
-
-            <!-- Grid de tarjetas (se genera dinámicamente desde js/productos.js) -->
             <div class="products-grid" id="productsGrid" aria-live="polite">
-                <!-- Estado inicial de carga -->
                 <div class="loading">
                     <div class="spinner" role="status" aria-label="Cargando productos"></div>
                     <p>Cargando productos...</p>
@@ -182,143 +63,16 @@
         </div>
     </section>
 
-    <!-- ════════════════════════════════════════════════════
-         FOOTER – Pie de página
-         ════════════════════════════════════════════════════ -->
-    <footer class="footer" aria-label="Pie de página">
-        <div class="container">
-            <div class="footer-content">
+    <div id="footer-root"></div>
+    <div id="whatsapp-root"></div>
+    <div id="carrito-root"></div>
 
-                <!-- Marca -->
-                <div class="footer-brand">
-                    <div class="logo">
-                        <span class="logo-icon">⚡</span>
-                        <span class="logo-text">BDJJ<span class="logo-highlight">Global</span></span>
-                    </div>
-                    <p>Tecnología que impulsa tu mundo. Reserva los mejores productos con la tranquilidad del pago contraentrega, Daviplata o Nequi.</p>
-                </div>
-
-                <!-- Enlaces rápidos -->
-                <div class="footer-links">
-                    <h4>Enlaces rápidos</h4>
-                    <ul>
-                        <li><a href="#catalogo">Productos</a></li>
-                        <li><a href="#nosotros">Nosotros</a></li>
-                        <li><a href="#faq">FAQ</a></li>
-                    </ul>
-                </div>
-
-                <!-- Contacto -->
-                <div class="footer-contact">
-                    <h4>Contacto</h4>
-                    <ul>
-                        <li>
-                            <i class="fas fa-envelope" aria-hidden="true"></i>
-                            <a href="mailto:julianforero55555@gmail.com"
-                               style="color:inherit; text-decoration:none;">
-                                julianforero55555@gmail.com
-                            </a>
-                        </li>
-                        <li>
-                            <i class="fab fa-whatsapp" aria-hidden="true"></i>
-                            <a href="https://wa.me/573228546837"
-                               target="_blank" rel="noopener noreferrer"
-                               style="color:inherit; text-decoration:none;">
-                                +57 322 854 6837
-                            </a>
-                        </li>
-                        <li>
-                            <i class="fas fa-map-marker-alt" aria-hidden="true"></i>
-                            Bogotá, Colombia
-                        </li>
-                    </ul>
-                </div>
-
-                <!-- Redes sociales -->
-                <div class="footer-social">
-                    <h4>Síguenos</h4>
-                    <div class="social-icons">
-                        <a href="#" class="social-icon" aria-label="Facebook">
-                            <i class="fab fa-facebook" aria-hidden="true"></i>
-                        </a>
-                        <a href="#" class="social-icon" aria-label="Instagram">
-                            <i class="fab fa-instagram" aria-hidden="true"></i>
-                        </a>
-                        <a href="https://www.tiktok.com/@bdjj_global" class="social-icon" aria-label="TikTok">
-                            <i class="fab fa-tiktok" aria-hidden="true"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="footer-bottom">
-                <p>&copy; 2026 BDJJ Global. Todos los derechos reservados. Hecho con ❤️ en Colombia.</p>
-            </div>
-        </div>
-    </footer>
-
-
-    <!-- ════════════════════════════════════════════════════
-         BOTÓN FLOTANTE DE WHATSAPP
-         Siempre visible en la esquina inferior derecha.
-         URL asignada dinámicamente desde js/app.js.
-         ════════════════════════════════════════════════════ -->
-    <a href="#"
-       class="whatsapp-float"
-       id="whatsappFloat"
-       target="_blank"
-       rel="noopener noreferrer"
-       aria-label="Contactar por WhatsApp">
-
-        <!-- Ícono SVG de WhatsApp -->
-        <svg width="30" height="30" viewBox="0 0 24 24" fill="white" aria-hidden="true">
-            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-        </svg>
-
-        <!-- Tooltip al hacer hover -->
-        <span class="whatsapp-float__tooltip" aria-hidden="true">¡Escríbenos!</span>
-    </a>
-
-
-    <!-- ════════════════════════════════════════════════════
-         MODAL – Formulario de reserva
-         Se muestra al hacer clic en "Reservar" en una tarjeta.
-         El contenido del body se inyecta dinámicamente desde
-         js/modal.js cuando se abre.
-         ════════════════════════════════════════════════════ -->
-    <div class="modal" id="reservationModal" role="dialog"
-         aria-modal="true" aria-labelledby="modalTitleEl">
-
-        <div class="modal-content">
-
-            <!-- Encabezado del modal (fijo al hacer scroll) -->
-            <div class="modal-header">
-                <h2 class="modal-title" id="modalTitleEl">Completar Reserva</h2>
-                <button class="modal-close" id="closeModal" aria-label="Cerrar modal">&times;</button>
-            </div>
-
-            <!-- Cuerpo del modal (inyectado por js/modal.js) -->
-            <div class="modal-body" id="modalBody"></div>
-        </div>
-    </div>
-
-
-    <!-- ════════════════════════════════════════════════════
-         SCRIPTS – Orden de carga importante:
-         1. config.js  → variables globales (CONFIG)
-         2. productos.js → módulo de catálogo
-         3. modal.js   → módulo del formulario
-         4. faq.js     → módulo de preguntas frecuentes
-         5. app.js     → inicialización y orquestación
-         ════════════════════════════════════════════════════ -->
     <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
     <script src="js/productos.js"></script>
-    <script src="js/modal.js"></script>
+    <script src="js/reserva-modal.js"></script>
     <script src="js/carrito.js"></script>
     <script src="js/faq.js"></script>
-
-    <!-- app.js siempre al final (orquesta todos los módulos) -->
     <script src="js/app.js"></script>
-
 </body>
 </html>

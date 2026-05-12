@@ -4,142 +4,80 @@
 
 .about-hero {
     background: linear-gradient(135deg, var(--azul-electrico) 0%, var(--azul-oscuro) 100%);
-    color: var(--blanco);
-    text-align: center;
-    padding: 100px 20px 60px;
+    color: var(--blanco); text-align: center; padding: 100px 20px 60px;
 }
-
 .about-hero .hero-badge {
-    display: inline-block;
-    background: rgba(255,255,255,0.15);
-    color: var(--blanco);
-    padding: 6px 18px;
-    border-radius: 50px;
-    font-size: 0.9rem;
-    margin-bottom: 20px;
-    backdrop-filter: blur(4px);
+    display: inline-block; background: rgba(255,255,255,0.15); color: var(--blanco);
+    padding: 6px 18px; border-radius: 50px; font-size: 0.9rem;
+    margin-bottom: 20px; backdrop-filter: blur(4px);
 }
+.about-hero__title { font-size: 3rem; color: var(--blanco); margin-bottom: 16px; }
+.about-hero__subtitle { font-size: 1.15rem; opacity: 0.85; max-width: 600px; margin: 0 auto; }
 
-.about-hero__title {
-    font-size: 3rem;
-    color: var(--blanco);
-    margin-bottom: 16px;
-}
-
-.about-hero__subtitle {
-    font-size: 1.15rem;
-    opacity: 0.85;
-    max-width: 600px;
-    margin: 0 auto;
-}
-
-/* Misión y Visión */
-.mision-vision {
-    padding: 80px 0;
-    background: var(--gris-claro);
-}
-
-.mv-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 32px;
-}
-
+.mision-vision { padding: 80px 0; background: var(--gris-claro); }
+.mv-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
 @media (max-width: 768px) {
     .mv-grid { grid-template-columns: 1fr; }
     .about-hero__title { font-size: 2rem; }
 }
 
 .mv-card {
-    background: var(--blanco);
-    border-radius: var(--radio);
-    padding: 40px 36px;
-    box-shadow: var(--sombra-media);
-    position: relative;
-    overflow: hidden;
+    background: var(--blanco); border-radius: var(--radio); padding: 40px 36px;
+    box-shadow: var(--sombra-media); position: relative; overflow: hidden;
 }
-
 .mv-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0;
-    width: 100%; height: 5px;
+    content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 5px;
 }
-
 .mv-card--mision::before { background: linear-gradient(90deg, var(--azul-electrico), var(--azul-claro)); }
 .mv-card--vision::before  { background: linear-gradient(90deg, var(--naranja), var(--naranja-oscuro)); }
+.mv-card__icon { font-size: 2.5rem; margin-bottom: 16px; }
+.mv-card__title { font-size: 1.5rem; margin-bottom: 14px; color: var(--negro); }
+.mv-card__text { color: var(--gris-medio); line-height: 1.75; font-size: 1rem; }
 
-.mv-card__icon {
-    font-size: 2.5rem;
-    margin-bottom: 16px;
-}
-
-.mv-card__title {
-    font-size: 1.5rem;
-    margin-bottom: 14px;
-    color: var(--negro);
-}
-
-.mv-card__text {
-    color: var(--gris-medio);
-    line-height: 1.75;
-    font-size: 1rem;
-}
-
-/* Valores */
-.valores {
-    padding: 80px 0;
-}
-
-.valores-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 24px;
-}
-
-@media (max-width: 900px) {
-    .valores-grid { grid-template-columns: repeat(2, 1fr); }
-}
-@media (max-width: 480px) {
-    .valores-grid { grid-template-columns: 1fr; }
-}
+.valores { padding: 80px 0; }
+.valores-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+@media (max-width: 900px) { .valores-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 480px) { .valores-grid { grid-template-columns: 1fr; } }
 
 .valor-item {
-    text-align: center;
-    padding: 32px 20px;
-    background: var(--gris-claro);
-    border-radius: var(--radio);
+    text-align: center; padding: 32px 20px; background: var(--gris-claro);
+    border-radius: var(--radio); transition: var(--transition);
+}
+.valor-item:hover {
+    transform: translateY(-4px); box-shadow: var(--sombra-media); background: var(--blanco);
+}
+.valor-icon { font-size: 2.2rem; display: block; margin-bottom: 12px; }
+.valor-item h4 { font-size: 1.1rem; margin-bottom: 8px; color: var(--azul-electrico); }
+.valor-item p { color: var(--gris-medio); font-size: 0.9rem; line-height: 1.6; }
+
+.about { padding: 80px 0; background: var(--blanco); }
+.team-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+@media (max-width: 768px) { .team-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 480px) { .team-grid { grid-template-columns: 1fr; } }
+
+.team-card {
+    background: var(--gris-claro); padding: 36px 28px;
+    border-radius: var(--radio); text-align: center;
+    transition: var(--transition); border: 2px solid transparent;
+}
+.team-card:hover {
+    border-color: var(--azul-electrico); transform: translateY(-5px); box-shadow: var(--sombra-media);
+}
+.team-avatar {
+    width: 110px; height: 110px; border-radius: 50%; object-fit: cover; object-position: top center;
+    margin: 0 auto 20px; border: 3px solid var(--azul-electrico); box-shadow: var(--sombra-suave);
+}
+.team-name { font-size: 1.4rem; margin-bottom: 4px; }
+.team-role { color: var(--azul-electrico); font-weight: 600; font-size: .92rem; margin-bottom: 14px; }
+.team-bio { color: var(--gris-medio); margin-bottom: 22px; line-height: 1.55; font-size: .95rem; }
+.team-social { display: flex; justify-content: center; gap: 12px; }
+.social-link-wa {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 9px 20px; background: var(--wa-verde); color: var(--blanco);
+    border-radius: 50px; text-decoration: none; font-weight: 600; font-size: .9rem;
     transition: var(--transition);
 }
-
-.valor-item:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--sombra-media);
-    background: var(--blanco);
-}
-
-.valor-icon {
-    font-size: 2.2rem;
-    display: block;
-    margin-bottom: 12px;
-}
-
-.valor-item h4 {
-    font-size: 1.1rem;
-    margin-bottom: 8px;
-    color: var(--azul-electrico);
-}
-
-.valor-item p {
-    color: var(--gris-medio);
-    font-size: 0.9rem;
-    line-height: 1.6;
-}
-
-/* Nav link active */
-.nav-link.active {
-    color: var(--azul-electrico);
-}
-.nav-link.active::after {
-    width: 100%;
+.social-link-wa:hover {
+    background: var(--wa-verde-oscuro); transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(37,211,102,.4);
 }

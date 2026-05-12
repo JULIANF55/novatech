@@ -1,174 +1,136 @@
 /**
  * ============================================================
  * ARCHIVO: js/productos.js
- * PROPÓSITO: Carga los productos desde Google Sheets (CSV) o
- * usa los datos demo de config.js. Renderiza el grid de tarjetas
- * y gestiona el stock en tiempo real (unidades disponibles).
+ * PROPÓSITO: Carga productos desde CSV, renderiza catálogo,
+ * filtros, stock en vivo y buscador del navbar.
  * ============================================================
  */
 
 const Productos = (() => {
 
-    /* ──────────────────────────────────────────────────────
-       ESTADO INTERNO
-       productos      → array de productos activos
-       stockLocal     → objeto { nombre: unidades } para rastrear
-                        unidades en tiempo real sin recargar
-       categoriaActiva → filtro actual
-       ────────────────────────────────────────────────────── */
-    let productos      = [];
-    let stockLocal     = {};
+    let productos = [];
+    let stockLocal = {};
     let categoriaActiva = 'todas';
 
-
-    /* ──────────────────────────────────────────────────────
-       CARGAR PRODUCTOS
-       Intenta obtener el CSV de Google Sheets; si falla o no
-       está configurado, usa productosDemo de config.js.
-       ────────────────────────────────────────────────────── */
-    async function cargarProductos() {
+    async function cargar() {
         const grid = document.getElementById('productsGrid');
+        if (!grid) return;
 
         if (CONFIG.sheets.urlCSV) {
             try {
-                const response = await fetch(CONFIG.sheets.urlCSV);
-                if (!response.ok) throw new Error('Error HTTP ' + response.status);
-
-                const csvText = await response.text();
-                productos = parsearCSV(csvText);
-
-                if (productos.length === 0) throw new Error('CSV sin datos');
-
-            } catch (error) {
-                console.warn('CSV no disponible:', error.message);
-                productos = [];  
+                const res = await fetch(CONFIG.sheets.urlCSV);
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                productos = parsearCSV(await res.text());
+                if (productos.length === 0) throw new Error('CSV vacío');
+            } catch (err) {
+                console.warn('CSV no disponible:', err.message);
+                productos = (CONFIG.productosDemo || []).map(p => ({ ...p }));
             }
         } else {
-            /* Clonar para no mutar el original de CONFIG */
-            productos = CONFIG.productosDemo.map(p => ({ ...p }));
+            productos = (CONFIG.productosDemo || []).map(p => ({ ...p }));
         }
 
-        /* Inicializar stockLocal con las unidades de cada producto */
         inicializarStock();
-
-        /* Pintar filtros y tarjetas */
         renderizarFiltros();
         renderizarGrid();
+        inicializarBuscador();
     }
 
-
-    /* ──────────────────────────────────────────────────────
-       INICIALIZAR STOCK LOCAL
-       Guarda las unidades iniciales en un objeto por nombre
-       de producto para controlarlas sin recargar la página.
-       ────────────────────────────────────────────────────── */
     function inicializarStock() {
         stockLocal = {};
         productos.forEach(p => {
             stockLocal[p.nombre] = parseInt(p.unidades) || 0;
 
-            // ── FIX: marcar promos también para productos demo ──
             if (!p.enPromocion && p.descuento && parseInt(p.descuento) > 0) {
-                p.enPromocion    = true;
-                const descuento  = parseInt(p.descuento);
-                const precioNum  = parseInt(String(p.precio).replace(/[^0-9]/g, ''));
+                p.enPromocion = true;
+                const descuento = parseInt(p.descuento);
+                const precioNum = parseInt(String(p.precio).replace(/[^0-9]/g, ''));
                 p.precioOriginal = p.precio;
-                p.precio         = Math.round(precioNum * (1 - descuento / 100)).toString();
+                p.precio = Math.round(precioNum * (1 - descuento / 100)).toString();
+            }
+
+            // Normalizar características a array
+            if (p.caracteristicas && typeof p.caracteristicas === 'string') {
+                p.caracteristicas = p.caracteristicas.split('|').map(s => s.trim()).filter(Boolean);
             }
         });
     }
 
-
-    /* ──────────────────────────────────────────────────────
-       PARSEAR CSV
-       Convierte texto CSV en array de objetos.
-       La primera fila debe ser el encabezado con los mismos
-       nombres de campo que productosDemo (nombre, cat, precio…)
-       ────────────────────────────────────────────────────── */
     function parsearCSV(csvText) {
         const lineas = csvText.split('\n').filter(l => l.trim());
         if (lineas.length < 2) return [];
 
-        const encabezados = lineas[0].split(',').map(h => h.trim().toLowerCase());
-        const resultado   = [];
+        const headers = lineas[0].split(',').map(h => h.trim().toLowerCase());
+        const out = [];
 
         for (let i = 1; i < lineas.length; i++) {
-            /* Dividir respetando comas dentro de comillas */
-            const valores  = dividirCSVLinea(lineas[i]);
-            const producto = {};
-
-            encabezados.forEach((col, idx) => {
-                producto[col] = (valores[idx] || '').trim().replace(/^"|"$/g, '');
+            const valores = dividirLineaCSV(lineas[i]);
+            const p = {};
+            headers.forEach((h, idx) => {
+                p[h] = (valores[idx] || '').trim().replace(/^"|"$/g, '');
             });
 
-            if (producto['categoría'])   producto.cat  = producto['categoría'];
-            if (producto['descripción']) producto.desc = producto['descripción'];
-            if (producto.descuento && parseInt(producto.descuento) > 0) {
-                producto.enPromocion = true;
-                producto.precioOriginal = producto.precio;
-                const descuento = parseInt(producto.descuento);
-                const precioNum = parseInt(String(producto.precio).replace(/[^0-9]/g, ''));
-                producto.precio = Math.round(precioNum * (1 - descuento / 100)).toString();
-            }
-            if (producto.nombre) resultado.push(producto);
-        }
+            if (p['categoría']) p.cat = p['categoría'];
+            if (p['descripción']) p.desc = p['descripción'];
 
-        return resultado;
+            if (p.descuento && parseInt(p.descuento) > 0) {
+                p.enPromocion = true;
+                p.precioOriginal = p.precio;
+                const descuento = parseInt(p.descuento);
+                const precioNum = parseInt(String(p.precio).replace(/[^0-9]/g, ''));
+                p.precio = Math.round(precioNum * (1 - descuento / 100)).toString();
+            }
+
+            if (p.caracteristicas) {
+                p.caracteristicas = p.caracteristicas.split('|').map(s => s.trim()).filter(Boolean);
+            }
+
+            if (p.nombre) out.push(p);
+        }
+        return out;
     }
 
-    /* Divide una línea CSV respetando valores entre comillas */
-    function dividirCSVLinea(linea) {
-        const resultado = [];
-        let actual      = '';
-        let enComillas  = false;
-
+    function dividirLineaCSV(linea) {
+        const res = [];
+        let actual = '';
+        let enComillas = false;
         for (let i = 0; i < linea.length; i++) {
-            const char = linea[i];
-            if (char === '"') {
+            const c = linea[i];
+            if (c === '"') {
                 enComillas = !enComillas;
-            } else if (char === ',' && !enComillas) {
-                resultado.push(actual);
+            } else if (c === ',' && !enComillas) {
+                res.push(actual);
                 actual = '';
             } else {
-                actual += char;
+                actual += c;
             }
         }
-        resultado.push(actual);
-        return resultado;
+        res.push(actual);
+        return res;
     }
 
-
-    /* ──────────────────────────────────────────────────────
-       RENDERIZAR FILTROS DE CATEGORÍA
-       Genera los botones de filtro según CONFIG.categorias,
-       mostrando solo las que tienen productos disponibles.
-       ────────────────────────────────────────────────────── */
     function renderizarFiltros() {
-        const contenedor = document.getElementById('categoryFilters');
-        if (!contenedor) return;
+        const cont = document.getElementById('categoryFilters');
+        if (!cont) return;
 
-        /* Categorías presentes en los productos cargados */
         const catsPresentes = new Set(productos.map(p => p.cat));
+        const hayPromos = productos.some(p => p.enPromocion);
 
-        /* Filtrar solo categorías que existen */
-        const hayPromociones = productos.some(p => p.enPromocion);
         const catsMostrar = CONFIG.categorias.filter(c =>
             c.id === 'todas' ||
-            (c.id === 'Promociones' && hayPromociones) ||
+            (c.id === 'Promociones' && hayPromos) ||
             catsPresentes.has(c.id)
         );
 
-        contenedor.innerHTML = catsMostrar.map(c => `
-            <button class="filter-btn ${c.id === 'todas' ? 'active' : ''}"
-                    data-categoria="${c.id}">
+        cont.innerHTML = catsMostrar.map(c => `
+            <button class="filter-btn ${c.id === 'todas' ? 'active' : ''}" data-categoria="${c.id}">
                 ${c.icono} ${c.nombre}
             </button>
         `).join('');
 
-        /* Asignar eventos de clic */
-        contenedor.querySelectorAll('.filter-btn').forEach(btn => {
+        cont.querySelectorAll('.filter-btn').forEach(btn => {
             btn.addEventListener('click', () => {
-                contenedor.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                cont.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
                 categoriaActiva = btn.dataset.categoria;
                 renderizarGrid();
@@ -176,17 +138,10 @@ const Productos = (() => {
         });
     }
 
-
-    /* ──────────────────────────────────────────────────────
-       RENDERIZAR GRID DE PRODUCTOS
-       Filtra los productos según la categoría activa y pinta
-       las tarjetas con imagen real, precio y stock en vivo.
-       ────────────────────────────────────────────────────── */
     function renderizarGrid() {
         const grid = document.getElementById('productsGrid');
         if (!grid) return;
 
-        /* Filtrar por categoría */
         const lista = categoriaActiva === 'todas'
             ? productos
             : categoriaActiva === 'Promociones'
@@ -194,118 +149,131 @@ const Productos = (() => {
                 : productos.filter(p => p.cat === categoriaActiva);
 
         if (lista.length === 0) {
-            grid.innerHTML = `
-                <div class="error-message">
-                    <p>😔 No hay productos en esta categoría por el momento.</p>
-                </div>`;
+            grid.innerHTML = `<div class="error-message"><p>😔 No hay productos en esta categoría por el momento.</p></div>`;
             return;
         }
 
-        grid.innerHTML = lista.map((producto, idx) => {
-            const unidades = stockLocal[producto.nombre] ?? parseInt(producto.unidades) ?? 99;
-            const agotado  = producto.stock === 'Agotado' || unidades <= 0;
-
-            /* Imagen: usa imagen real si existe, o fondo de color de categoría */
-            const imagenHTML = producto.imagen
-                ? `<img src="${producto.imagen}" alt="${producto.nombre}" class="product-img" loading="lazy">`
-                : `<span class="product-emoji-placeholder">📦</span>`;
+        grid.innerHTML = lista.map(p => {
+            const unidades = stockLocal[p.nombre] ?? parseInt(p.unidades) ?? 99;
+            const agotado = p.stock === 'Agotado' || unidades <= 0;
 
             return `
-            <div class="product-card" data-nombre="${producto.nombre}">
-
-                <!-- Imagen del producto -->
+            <div class="product-card" data-nombre="${Utils.escapeHtml(p.nombre)}">
                 <div class="product-image ${agotado ? 'agotado-overlay' : ''}">
-                    ${imagenHTML}
-                    <span class="product-category">${producto.cat}</span>
-                    ${producto.enPromocion ? `<span class="badge-descuento">-${producto.descuento}%</span>` : ''}
+                    ${p.imagen
+                        ? `<img src="productos/${p.imagen}.png" alt="${Utils.escapeHtml(p.nombre)}" class="product-img" loading="lazy">`
+                        : `<span class="product-emoji-placeholder">📦</span>`
+                    }
+                    <span class="product-category">${Utils.escapeHtml(p.cat)}</span>
+                    ${p.enPromocion ? `<span class="badge-descuento">-${p.descuento}%</span>` : ''}
                     ${agotado ? '<span class="badge-agotado">Agotado</span>' : ''}
                 </div>
-
-                <!-- Información del producto -->
                 <div class="product-info">
-                    <h3 class="product-name">${producto.nombre}</h3>
-                    ${producto.enPromocion ? `<p class="product-price-original">$${formatearPrecio(producto.precioOriginal)}</p>` : ''}
-                    <p class="product-price">$${formatearPrecio(producto.precio)}</p>
-                    <p class="product-description">${producto.desc}</p>
-
-                    <!-- Stock en tiempo real -->
-                    <span class="product-stock ${agotado ? 'stock-agotado' : ''}"
-                          id="stock-${producto.nombre.replace(/\s+/g, '-')}">
-                        ${agotado
-                            ? '❌ Agotado'
-                            : `✅ ${unidades} unidad${unidades !== 1 ? 'es' : ''} disponible${unidades !== 1 ? 's' : ''}`
-                        }
+                    <h3 class="product-name">${Utils.escapeHtml(p.nombre)}</h3>
+                    ${p.enPromocion ? `<p class="product-price-original">$${Utils.formatPrice(p.precioOriginal)}</p>` : ''}
+                    <p class="product-price">$${Utils.formatPrice(p.precio)}</p>
+                    <span class="product-stock ${agotado ? 'stock-agotado' : ''}" id="stock-${p.nombre.replace(/\s+/g, '-')}">
+                        ${agotado ? '❌ Agotado' : `✅ ${unidades} disponible${unidades !== 1 ? 's' : ''}`}
                     </span>
-
-                    <!-- Botón de reservar -->
-                    <button class="btn-reservar btn-add-cart"
-                            data-producto='${encodeURIComponent(JSON.stringify(producto))}'
-                            ${agotado ? 'disabled' : ''}>
-                        <i class="fas fa-cart-plus"></i>
-                        ${agotado ? 'No disponible' : 'Agregar al carrito'}
+                    <button class="btn-ver-producto" data-nombre="${Utils.escapeHtml(p.nombre)}" ${agotado ? 'disabled' : ''}>
+                        <i class="fas fa-eye"></i> ${agotado ? 'No disponible' : 'Ver producto'}
                     </button>
                 </div>
             </div>`;
         }).join('');
 
-        /* Asignar eventos a los botones de reservar */
-        grid.querySelectorAll('.btn-add-cart:not([disabled])').forEach(btn => {
+        grid.querySelectorAll('.btn-ver-producto:not([disabled])').forEach(btn => {
             btn.addEventListener('click', () => {
-                const data = JSON.parse(decodeURIComponent(btn.dataset.producto));
-                Carrito.agregar(data);
+                const nombre = btn.dataset.nombre;
+                const prod = productos.find(p => p.nombre === nombre);
+                if (prod) {
+                    // Guardamos el producto en sessionStorage y navegamos
+                    sessionStorage.setItem('productoSeleccionado', JSON.stringify(prod));
+                    window.location.href = 'producto.html';
+                }
             });
         });
     }
 
-
-    /* ──────────────────────────────────────────────────────
-       DESCONTAR STOCK
-       Se llama cuando se confirma una reserva exitosa.
-       Reduce las unidades del producto en 1 y actualiza la
-       tarjeta en pantalla sin recargar la página.
-       ────────────────────────────────────────────────────── */
     function descontarStock(nombreProducto) {
         if (stockLocal[nombreProducto] === undefined) return;
-
         stockLocal[nombreProducto] = Math.max(0, stockLocal[nombreProducto] - 1);
-        const unidades = stockLocal[nombreProducto];
-
-        /* Actualizar texto de stock en la tarjeta correspondiente */
-        const idStock = 'stock-' + nombreProducto.replace(/\s+/g, '-');
-        const el = document.getElementById(idStock);
+        const u = stockLocal[nombreProducto];
+        const el = document.getElementById('stock-' + nombreProducto.replace(/\s+/g, '-'));
         if (!el) return;
 
-        if (unidades <= 0) {
-            /* Marcar como agotado en la interfaz */
-            el.textContent    = '❌ Agotado';
+        if (u <= 0) {
+            el.textContent = '❌ Agotado';
             el.classList.add('stock-agotado');
-
-            const card  = el.closest('.product-card');
-            const btnRe = card?.querySelector('.btn-reservar');
-            if (btnRe) {
-                btnRe.disabled   = true;
-                btnRe.innerHTML  = '<i class="fas fa-shopping-cart"></i> No disponible';
-            }
+            const card = el.closest('.product-card');
+            const btn = card?.querySelector('.btn-ver-producto');
+            if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-eye"></i> No disponible'; }
         } else {
-            el.textContent = `✅ ${unidades} unidad${unidades !== 1 ? 'es' : ''} disponible${unidades !== 1 ? 's' : ''}`;
+            el.textContent = `✅ ${u} disponible${u !== 1 ? 's' : ''}`;
         }
     }
 
+    /* ── Buscador del navbar ── */
+    function inicializarBuscador() {
+        const input = document.getElementById('navSearchInput');
+        const results = document.getElementById('navSearchResults');
+        const clearBtn = document.getElementById('navSearchClear');
+        if (!input || !results) return;
 
-    /* ──────────────────────────────────────────────────────
-       FORMATEAR PRECIO
-       Convierte el precio a formato colombiano: 89900 → 89.900
-       ────────────────────────────────────────────────────── */
-    function formatearPrecio(precio) {
-        const num = parseInt(String(precio).replace(/[^0-9]/g, ''));
-        if (isNaN(num)) return '0';
-        return num.toLocaleString('es-CO');
+        input.addEventListener('input', () => {
+            const q = input.value.trim().toLowerCase();
+            clearBtn.style.display = q ? 'flex' : 'none';
+            if (!q) { results.style.display = 'none'; return; }
+
+            const matches = productos.filter(p =>
+                p.nombre.toLowerCase().includes(q) ||
+                (p.desc || '').toLowerCase().includes(q) ||
+                (p.cat || '').toLowerCase().includes(q)
+            ).slice(0, 6);
+
+            if (matches.length === 0) {
+                results.innerHTML = `<div class="nav-search__no-result">😔 Sin resultados para "<strong>${Utils.escapeHtml(q)}</strong>"</div>`;
+            } else {
+                results.innerHTML = matches.map(p => `
+                    <div class="nav-search__item" data-nombre="${Utils.escapeHtml(p.nombre)}">
+                        ${p.imagen ? `<img src="productos/${p.imagen}" alt="${Utils.escapeHtml(p.nombre)}" class="nav-search__thumb">` : '<span class="nav-search__emoji">📦</span>'}
+                        <div class="nav-search__item-info">
+                            <span class="nav-search__item-name">${Utils.escapeHtml(p.nombre)}</span>
+                            <span class="nav-search__item-cat">${Utils.escapeHtml(p.cat)} · $${Utils.formatPrice(p.precio)}</span>
+                        </div>
+                        <button class="nav-search__item-btn">Ver</button>
+                    </div>
+                `).join('');
+
+                results.querySelectorAll('.nav-search__item-btn').forEach((btn, idx) => {
+                    btn.addEventListener('click', () => {
+                        sessionStorage.setItem('productoSeleccionado', JSON.stringify(matches[idx]));
+                        window.location.href = 'producto.html';
+                        results.style.display = 'none';
+                        input.value = '';
+                        clearBtn.style.display = 'none';
+                    });
+                });
+            }
+            results.style.display = 'block';
+        });
+
+        clearBtn?.addEventListener('click', () => {
+            input.value = '';
+            results.style.display = 'none';
+            clearBtn.style.display = 'none';
+            input.focus();
+        });
+
+        document.addEventListener('click', e => {
+            if (!document.getElementById('navSearch')?.contains(e.target)) {
+                results.style.display = 'none';
+            }
+        });
     }
 
-
-    /* API pública del módulo */
     return {
-        cargar:      cargarProductos,
+        cargar,
         getProductos: () => productos,
         descontarStock
     };

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Producto – BDJJ Global</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;500;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/carrito.css">
+    <link rel="stylesheet" href="css/reserva-modal.css">
+    <link rel="stylesheet" href="css/producto-detalle.css">
+</head>
+<body>
+
+    <div id="navbar-root"></div>
+
+    <!-- HERO: imagen grande del producto -->
+    <section class="pd-hero" id="pdHero">
+        <div class="container">
+            <button class="pd-back" onclick="history.back()">
+                <i class="fas fa-arrow-left"></i> Volver al catálogo
+            </button>
+            <div class="pd-hero__img-wrap">
+                <img src="" alt="" class="pd-hero__img" id="pdImagen">
+            </div>
+        </div>
+    </section>
+
+    <!-- DESCRIPCIÓN -->
+    <section class="pd-descripcion">
+        <div class="container pd-grid">
+            <div class="pd-main">
+                <span class="pd-categoria" id="pdCategoria"></span>
+                <h1 class="pd-titulo" id="pdNombre"></h1>
+                <p class="pd-precio" id="pdPrecio"></p>
+                <p class="pd-precio-original" id="pdPrecioOriginal" style="display:none"></p>
+
+                <div class="pd-desc-bloque">
+                    <h3>Descripción</h3>
+                    <p id="pdDescripcion"></p>
+                </div>
+                <!-- CARACTERÍSTICAS -->
+                <div class="pd-caract-bloque" id="pdCaractBloque">
+                    <h3>Características</h3>
+                    <ul class="pd-caract-lista" id="pdCaracteristicas"></ul>
+                </div>
+            </div>
+
+            <div class="pd-sidebar">
+
+                <!-- ACCIONES -->
+                <div class="pd-acciones">
+                    <div class="qty-control">
+                        <button type="button" class="qty-btn" id="pdQtyMinus">−</button>
+                        <input type="number" id="pdQty" value="1" min="1" max="99" readonly class="qty-input">
+                        <button type="button" class="qty-btn" id="pdQtyPlus">+</button>
+                    </div>
+                    <button class="btn-primary pd-btn-carrito" id="pdAddCart">
+                        <i class="fas fa-cart-plus"></i> Agregar al carrito
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div id="footer-root"></div>
+    <div id="whatsapp-root"></div>
+    <div id="carrito-root"></div>
+
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/carrito.js"></script>
+    <script src="js/reserva-modal.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/producto-detalle.js"></script>
+</body>
+</html>

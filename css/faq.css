@@ -1,0 +1,30 @@
+/* ============================================================
+   FAQ – Acordeón
+   ============================================================ */
+
+.faq { padding: 80px 0; background: var(--gris-claro); }
+.faq-container { max-width: 800px; margin: 0 auto; }
+
+.faq-item {
+    background: var(--blanco); border-radius: var(--radio-sm);
+    margin-bottom: 14px; overflow: hidden; box-shadow: var(--sombra-suave);
+}
+.faq-question {
+    padding: 20px 24px; cursor: pointer;
+    display: flex; justify-content: space-between; align-items: center;
+    font-weight: 600; font-family: var(--font-title); color: var(--negro);
+    transition: var(--transition); user-select: none;
+}
+.faq-question:hover { color: var(--azul-electrico); }
+.faq-icon {
+    transition: var(--transition); color: var(--azul-electrico);
+    flex-shrink: 0; margin-left: 16px;
+}
+.faq-item.active .faq-icon { transform: rotate(180deg); }
+
+.faq-answer {
+    padding: 0 24px; max-height: 0; overflow: hidden;
+    transition: max-height .35s ease, padding .35s ease;
+    color: var(--gris-medio); line-height: 1.65;
+}
+.faq-item.active .faq-answer { padding: 0 24px 22px; max-height: 600px; }
